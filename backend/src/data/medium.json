@@ -1,0 +1,2012 @@
+{
+  "Subqueries & Nested Logic": [
+    {
+      "title": "Employees Working in New York Based Departments",
+      "slug": "employees-in-ny-departments",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["IN", "SUBQUERY"],
+      "description": "Write a SQL query to return employees who work in departments that are located in New York.",
+      "hints": [
+        "Use a subquery to find department IDs located in New York.",
+        "Use IN to filter employees."
+      ],
+      "setupSQL": "CREATE TABLE departments(id INTEGER PRIMARY KEY, name TEXT, location TEXT);\nCREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER);\nINSERT INTO departments VALUES\n(1, 'HR', 'New York'),\n(2, 'Engineering', 'Chicago'),\n(3, 'Finance', 'New York');\nINSERT INTO employees VALUES\n(1, 'Alice', 1),\n(2, 'Bob', 2),\n(3, 'Charlie', 3),\n(4, 'David', 2);",
+      "solutionSQL": "SELECT name FROM employees WHERE department_id IN (SELECT id FROM departments WHERE location = 'New York');",
+      "testCases": [
+        {
+          "name": "Employees in New York based departments",
+          "expectedRows": [{ "name": "Alice" }, { "name": "Charlie" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Products Ordered At Least Once",
+      "slug": "products-ordered-exists",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["EXISTS"],
+      "description": "Write a query to return all products that have been ordered at least once.",
+      "hints": [
+        "Use EXISTS to check matching order rows.",
+        "Filter using product_id."
+      ],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, product_id INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop'),\n(2, 'Mouse'),\n(3, 'Keyboard');\nINSERT INTO orders VALUES\n(1, 1),\n(2, 1),\n(3, 3);",
+      "solutionSQL": "SELECT name FROM products p WHERE EXISTS (SELECT 1 FROM orders o WHERE o.product_id = p.id);",
+      "testCases": [
+        {
+          "name": "Products with at least one order",
+          "expectedRows": [{ "name": "Laptop" }, { "name": "Keyboard" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Customers With More Than 2 Orders",
+      "slug": "customers-more-than-two-orders",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["CORRELATED SUBQUERY"],
+      "description": "Write a SQL query to return customers who have placed more than 2 orders.",
+      "hints": [
+        "Use COUNT(*) inside a correlated subquery.",
+        "Compare against 2."
+      ],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER);\nINSERT INTO customers VALUES\n(1, 'Alice'),\n(2, 'Bob'),\n(3, 'Charlie');\nINSERT INTO orders VALUES\n(1, 1),\n(2, 1),\n(3, 1),\n(4, 2),\n(5, 3),\n(6, 3);",
+      "solutionSQL": "SELECT name FROM customers c WHERE (SELECT COUNT(*) FROM orders o WHERE o.customer_id = c.id) > 2;",
+      "testCases": [
+        {
+          "name": "Customers with more than 2 orders",
+          "expectedRows": [{ "name": "Alice" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Employees Earning Above Company Average",
+      "slug": "employees-above-average-salary",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["SUBQUERY", "AVG"],
+      "description": "Write a SQL query to return employees who earn more than the average salary.",
+      "hints": ["Use AVG(salary) inside the WHERE clause."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 60000),\n(2, 'Bob', 90000),\n(3, 'Charlie', 75000),\n(4, 'David', 50000);",
+      "solutionSQL": "SELECT name FROM employees WHERE salary > (SELECT AVG(salary) FROM employees);",
+      "testCases": [
+        {
+          "name": "Employees above avg salary",
+          "expectedRows": [{ "name": "Bob" }, { "name": "Charlie" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Products More Expensive Than Category Average",
+      "slug": "products-above-category-average",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["CORRELATED SUBQUERY"],
+      "description": "Write a SQL query to return products whose price is above the average price for their category.",
+      "hints": ["Use correlated subqueries with category_id."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, category_id INTEGER, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop', 1, 900),\n(2, 'Mouse', 1, 40),\n(3, 'Keyboard', 1, 70),\n(4, 'Shirt', 2, 50),\n(5, 'Jacket', 2, 120);",
+      "solutionSQL": "SELECT name FROM products p WHERE price > (SELECT AVG(price) FROM products WHERE category_id = p.category_id);",
+      "testCases": [
+        {
+          "name": "Products above category avg",
+          "expectedRows": [{ "name": "Laptop" }, { "name": "Jacket" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Employees in Highest Budget Department",
+      "slug": "employees-highest-budget-dept",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["SUBQUERY", "MAX"],
+      "description": "Write a SQL query to return employees who work in the department with the highest budget.",
+      "hints": ["Find the department with MAX(budget) first."],
+      "setupSQL": "CREATE TABLE departments(id INTEGER PRIMARY KEY, name TEXT, budget INTEGER);\nCREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER);\nINSERT INTO departments VALUES\n(1, 'HR', 50000),\n(2, 'Engineering', 120000),\n(3, 'Finance', 90000);\nINSERT INTO employees VALUES\n(1, 'Alice', 1),\n(2, 'Bob', 2),\n(3, 'Charlie', 2),\n(4, 'David', 3);",
+      "solutionSQL": "SELECT name FROM employees WHERE department_id = (SELECT id FROM departments ORDER BY budget DESC LIMIT 1);",
+      "testCases": [
+        {
+          "name": "Employees in highest budget dept",
+          "expectedRows": [{ "name": "Bob" }, { "name": "Charlie" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Customers Who Have Never Placed an Order",
+      "slug": "customers-no-orders",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["NOT IN", "SUBQUERY"],
+      "description": "Write a SQL query to return customers who have never placed an order.",
+      "hints": [
+        "Use NOT IN with a subquery selecting customer_ids from orders."
+      ],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER);\nINSERT INTO customers VALUES\n(1, 'Alice'),\n(2, 'Bob'),\n(3, 'Charlie');\nINSERT INTO orders VALUES\n(1, 1),\n(2, 1),\n(3, 2);",
+      "solutionSQL": "SELECT name FROM customers WHERE id NOT IN (SELECT customer_id FROM orders);",
+      "testCases": [
+        {
+          "name": "Customers with no orders",
+          "expectedRows": [{ "name": "Charlie" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Top 3 Highest Salaries",
+      "slug": "top-three-salaries-subquery",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["SUBQUERY", "LIMIT"],
+      "description": "Write a query to return the top 3 highest salaries using a subquery.",
+      "hints": ["Use ORDER BY salary DESC.", "Use LIMIT inside the subquery."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 60000),\n(2, 'Bob', 90000),\n(3, 'Charlie', 75000),\n(4, 'David', 85000),\n(5, 'Emma', 50000);",
+      "solutionSQL": "SELECT * FROM employees WHERE salary IN (SELECT salary FROM employees ORDER BY salary DESC LIMIT 3);",
+      "testCases": [
+        {
+          "name": "Top 3 salaries",
+          "expectedRows": [
+            { "id": 2, "name": "Bob", "salary": 90000 },
+            { "id": 4, "name": "David", "salary": 85000 },
+            { "id": 3, "name": "Charlie", "salary": 75000 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Employees Earning More Than Department Average",
+      "slug": "employees-above-dept-average",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["CORRELATED SUBQUERY"],
+      "description": "Return employees who earn more than the average salary of their department.",
+      "hints": [
+        "Use a correlated subquery comparing salary to department averages."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 1, 60000),\n(2, 'Bob', 1, 90000),\n(3, 'Charlie', 2, 75000),\n(4, 'David', 2, 70000);",
+      "solutionSQL": "SELECT name FROM employees e WHERE salary > (SELECT AVG(salary) FROM employees WHERE department_id = e.department_id);",
+      "testCases": [
+        {
+          "name": "Employees above dept average",
+          "expectedRows": [{ "name": "Bob" }, { "name": "Charlie" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Users Who Logged In Today but Not Yesterday",
+      "slug": "users-today-not-yesterday",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Subqueries & Nested Logic",
+      "tags": ["IN", "NOT IN", "DATES"],
+      "description": "Write a query to return users who logged in today but did not log in yesterday.",
+      "hints": [
+        "Compare today's logins with yesterday's logins.",
+        "Use IN and NOT IN subqueries."
+      ],
+      "setupSQL": "CREATE TABLE logins(user_id INTEGER, login_date TEXT);\nINSERT INTO logins VALUES\n(1, '2024-01-09'),\n(2, '2024-01-09'),\n(1, '2024-01-10'),\n(3, '2024-01-10'),\n(4, '2024-01-10');",
+      "solutionSQL": "SELECT DISTINCT user_id FROM logins WHERE login_date = '2024-01-10' AND user_id NOT IN (SELECT user_id FROM logins WHERE login_date = '2024-01-09');",
+      "testCases": [
+        {
+          "name": "Users logged in today but not yesterday",
+          "expectedRows": [{ "user_id": 3 }, { "user_id": 4 }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "Conditional Expressions": [
+    {
+      "title": "Classify Orders as High, Medium, Low Amount",
+      "slug": "order-amount-categories",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE", "CONDITIONAL"],
+      "description": "Write a SQL query to label each order as 'High', 'Medium', or 'Low' based on its amount.",
+      "hints": ["Use CASE WHEN amount > 300 THEN 'High' ..."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 120),\n(2, 350),\n(3, 80),\n(4, 500);",
+      "solutionSQL": "SELECT id, CASE WHEN amount > 300 THEN 'High' WHEN amount BETWEEN 100 AND 300 THEN 'Medium' ELSE 'Low' END AS amount_category FROM orders;",
+      "testCases": [
+        {
+          "name": "Order amount categories",
+          "expectedRows": [
+            { "id": 1, "amount_category": "Medium" },
+            { "id": 2, "amount_category": "High" },
+            { "id": 3, "amount_category": "Low" },
+            { "id": 4, "amount_category": "High" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Grade Students Based on Score",
+      "slug": "grade-students",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE", "GRADING"],
+      "description": "Write a SQL query to assign grades A, B, C, D, or F based on student scores.",
+      "hints": ["CASE WHEN score >= 90 THEN 'A' ..."],
+      "setupSQL": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT, score INTEGER);\nINSERT INTO students VALUES\n(1, 'Alice', 95),\n(2, 'Bob', 82),\n(3, 'Charlie', 68),\n(4, 'David', 50),\n(5, 'Emily', 30);",
+      "solutionSQL": "SELECT name, CASE WHEN score >= 90 THEN 'A' WHEN score >= 80 THEN 'B' WHEN score >= 70 THEN 'C' WHEN score >= 60 THEN 'D' ELSE 'F' END AS grade FROM students;",
+      "testCases": [
+        {
+          "name": "Student grades",
+          "expectedRows": [
+            { "name": "Alice", "grade": "A" },
+            { "name": "Bob", "grade": "B" },
+            { "name": "Charlie", "grade": "C" },
+            { "name": "David", "grade": "D" },
+            { "name": "Emily", "grade": "F" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Add Active or Inactive Status Based on Last Login",
+      "slug": "active-inactive-users",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE", "DATES"],
+      "description": "Write a SQL query to mark users as 'Active' if they logged in after 2024-01-01, otherwise 'Inactive'.",
+      "hints": ["Use a date comparison in CASE."],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, last_login TEXT);\nINSERT INTO users VALUES\n(1, 'Alice', '2024-02-10'),\n(2, 'Bob', '2023-12-25'),\n(3, 'Charlie', '2024-01-15');",
+      "solutionSQL": "SELECT name, CASE WHEN last_login > '2024-01-01' THEN 'Active' ELSE 'Inactive' END AS status FROM users;",
+      "testCases": [
+        {
+          "name": "Active/Inactive status",
+          "expectedRows": [
+            { "name": "Alice", "status": "Active" },
+            { "name": "Bob", "status": "Inactive" },
+            { "name": "Charlie", "status": "Active" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Label Employees as Senior or Junior",
+      "slug": "senior-junior-employees",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE"],
+      "description": "Write a query to label employees as 'Senior' if experience is more than 5 years, otherwise 'Junior'.",
+      "hints": ["Use CASE with numeric comparison."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, experience INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 3),\n(2, 'Bob', 8),\n(3, 'Charlie', 5),\n(4, 'David', 10);",
+      "solutionSQL": "SELECT name, CASE WHEN experience > 5 THEN 'Senior' ELSE 'Junior' END AS level FROM employees;",
+      "testCases": [
+        {
+          "name": "Seniority labels",
+          "expectedRows": [
+            { "name": "Alice", "level": "Junior" },
+            { "name": "Bob", "level": "Senior" },
+            { "name": "Charlie", "level": "Junior" },
+            { "name": "David", "level": "Senior" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Tag Shipping Speed Based on Delivery Days",
+      "slug": "shipping-speed-category",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE"],
+      "description": "Write a SQL query to categorize shipping speed based on number of delivery days.",
+      "hints": ["Use CASE WHEN days <= 2 THEN 'Fast' ..."],
+      "setupSQL": "CREATE TABLE shipments(id INTEGER PRIMARY KEY, days_to_deliver INTEGER);\nINSERT INTO shipments VALUES\n(1, 1),\n(2, 3),\n(3, 5),\n(4, 2);",
+      "solutionSQL": "SELECT id, CASE WHEN days_to_deliver <= 2 THEN 'Fast' WHEN days_to_deliver <= 4 THEN 'Normal' ELSE 'Slow' END AS speed FROM shipments;",
+      "testCases": [
+        {
+          "name": "Shipping speeds",
+          "expectedRows": [
+            { "id": 1, "speed": "Fast" },
+            { "id": 2, "speed": "Normal" },
+            { "id": 3, "speed": "Slow" },
+            { "id": 4, "speed": "Fast" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Classify Sales as Discount or Regular",
+      "slug": "discount-or-regular",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE"],
+      "description": "Write a SQL query to classify each sale as 'Discount' if discount > 0, else 'Regular'.",
+      "hints": ["Check discount column > 0."],
+      "setupSQL": "CREATE TABLE sales(id INTEGER PRIMARY KEY, amount INTEGER, discount INTEGER);\nINSERT INTO sales VALUES\n(1, 200, 20),\n(2, 150, 0),\n(3, 300, 10);",
+      "solutionSQL": "SELECT id, CASE WHEN discount > 0 THEN 'Discount' ELSE 'Regular' END AS sale_type FROM sales;",
+      "testCases": [
+        {
+          "name": "Sale type classification",
+          "expectedRows": [
+            { "id": 1, "sale_type": "Discount" },
+            { "id": 2, "sale_type": "Regular" },
+            { "id": 3, "sale_type": "Discount" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Identify Even or Odd Product IDs",
+      "slug": "even-or-odd-product-ids",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE", "MOD"],
+      "description": "Write a SQL query to return each product's ID labeled as 'Even' or 'Odd'.",
+      "hints": ["Use id % 2 = 0 for checking even numbers."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO products VALUES\n(1, 'Laptop'),\n(2, 'Mouse'),\n(3, 'Keyboard'),\n(4, 'Monitor');",
+      "solutionSQL": "SELECT id, CASE WHEN id % 2 = 0 THEN 'Even' ELSE 'Odd' END AS parity FROM products;",
+      "testCases": [
+        {
+          "name": "Even/Odd classification",
+          "expectedRows": [
+            { "id": 1, "parity": "Odd" },
+            { "id": 2, "parity": "Even" },
+            { "id": 3, "parity": "Odd" },
+            { "id": 4, "parity": "Even" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Validate Emails by Checking @ Symbol",
+      "slug": "email-validation-case",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE", "INSTR"],
+      "description": "Write a SQL query to check whether each email is valid (contains '@').",
+      "hints": ["Use INSTR(email, '@') > 0."],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, email TEXT);\nINSERT INTO users VALUES\n(1, 'alice@example.com'),\n(2, 'bobgmail.com'),\n(3, 'charlie@test.org');",
+      "solutionSQL": "SELECT email, CASE WHEN INSTR(email, '@') > 0 THEN 'Valid' ELSE 'Invalid' END AS status FROM users;",
+      "testCases": [
+        {
+          "name": "Email validation",
+          "expectedRows": [
+            { "email": "alice@example.com", "status": "Valid" },
+            { "email": "bobgmail.com", "status": "Invalid" },
+            { "email": "charlie@test.org", "status": "Valid" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Bucket Customers Into Age Groups",
+      "slug": "age-group-buckets",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE"],
+      "description": "Write a SQL query to bucket customers into 'Youth', 'Adult', and 'Senior' groups based on age.",
+      "hints": ["Use CASE WHEN age < 18 ..."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, age INTEGER);\nINSERT INTO customers VALUES\n(1, 'Alice', 15),\n(2, 'Bob', 25),\n(3, 'Charlie', 68);",
+      "solutionSQL": "SELECT name, CASE WHEN age < 18 THEN 'Youth' WHEN age BETWEEN 18 AND 60 THEN 'Adult' ELSE 'Senior' END AS age_group FROM customers;",
+      "testCases": [
+        {
+          "name": "Age group labels",
+          "expectedRows": [
+            { "name": "Alice", "age_group": "Youth" },
+            { "name": "Bob", "age_group": "Adult" },
+            { "name": "Charlie", "age_group": "Senior" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Mark Items as In Stock or Out of Stock",
+      "slug": "in-stock-or-out",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Conditional Expressions",
+      "tags": ["CASE"],
+      "description": "Write a SQL query to label each item as 'In Stock' if quantity > 0, otherwise 'Out of Stock'.",
+      "hints": ["Check quantity column.", "Use CASE for text labeling."],
+      "setupSQL": "CREATE TABLE items(id INTEGER PRIMARY KEY, name TEXT, quantity INTEGER);\nINSERT INTO items VALUES\n(1, 'Laptop', 10),\n(2, 'Mouse', 0),\n(3, 'Keyboard', 5);",
+      "solutionSQL": "SELECT name, CASE WHEN quantity > 0 THEN 'In Stock' ELSE 'Out of Stock' END AS stock_status FROM items;",
+      "testCases": [
+        {
+          "name": "Stock status labels",
+          "expectedRows": [
+            { "name": "Laptop", "stock_status": "In Stock" },
+            { "name": "Mouse", "stock_status": "Out of Stock" },
+            { "name": "Keyboard", "stock_status": "In Stock" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    }
+  ],
+  "String & Date Manipulation": [
+    {
+      "title": "Extract Year From Order Date",
+      "slug": "extract-year-order-date",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["DATE", "SUBSTRING", "YEAR"],
+      "description": "Write a SQL query to extract the year from each order date.",
+      "hints": [
+        "Use SUBSTR(order_date, 1, 4) in SQLite.",
+        "Dates use YYYY-MM-DD format."
+      ],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, order_date TEXT);\nINSERT INTO orders VALUES\n(1, '2024-01-05'),\n(2, '2023-12-25'),\n(3, '2022-06-18');",
+      "solutionSQL": "SELECT id, SUBSTR(order_date, 1, 4) AS order_year FROM orders;",
+      "testCases": [
+        {
+          "name": "Extracted years",
+          "expectedRows": [
+            { "id": 1, "order_year": "2024" },
+            { "id": 2, "order_year": "2023" },
+            { "id": 3, "order_year": "2022" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Replace Hyphens in Dates With Slashes",
+      "slug": "replace-date-hyphens",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["REPLACE", "DATE"],
+      "description": "Write a SQL query to replace '-' with '/' in each date.",
+      "hints": ["Use REPLACE(order_date, '-', '/')."],
+      "setupSQL": "CREATE TABLE logs(id INTEGER PRIMARY KEY, log_date TEXT);\nINSERT INTO logs VALUES\n(1, '2024-01-10'),\n(2, '2023-12-30');",
+      "solutionSQL": "SELECT REPLACE(log_date, '-', '/') AS formatted_date FROM logs;",
+      "testCases": [
+        {
+          "name": "Replace hyphens",
+          "expectedRows": [
+            { "formatted_date": "2024/01/10" },
+            { "formatted_date": "2023/12/30" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Extract Month From Order Date",
+      "slug": "extract-month-order-date",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["SUBSTRING", "DATE"],
+      "description": "Write a query to extract the month from each order date.",
+      "hints": ["Use SUBSTR(order_date, 6, 2)."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, order_date TEXT);\nINSERT INTO orders VALUES\n(1, '2024-02-10'),\n(2, '2024-11-05'),\n(3, '2023-01-20');",
+      "solutionSQL": "SELECT id, SUBSTR(order_date, 6, 2) AS month FROM orders;",
+      "testCases": [
+        {
+          "name": "Extract month values",
+          "expectedRows": [
+            { "id": 1, "month": "02" },
+            { "id": 2, "month": "11" },
+            { "id": 3, "month": "01" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Extract Day From Date",
+      "slug": "extract-day-from-date",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["SUBSTRING", "DAY"],
+      "description": "Write a SQL query to extract the day from each date.",
+      "hints": ["Use SUBSTR(date, 9, 2)."],
+      "setupSQL": "CREATE TABLE events(id INTEGER PRIMARY KEY, event_date TEXT);\nINSERT INTO events VALUES\n(1, '2024-06-15'),\n(2, '2024-12-01');",
+      "solutionSQL": "SELECT id, SUBSTR(event_date, 9, 2) AS day FROM events;",
+      "testCases": [
+        {
+          "name": "Extracted days",
+          "expectedRows": [
+            { "id": 1, "day": "15" },
+            { "id": 2, "day": "01" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Extract Username From Email",
+      "slug": "extract-username-email",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["SUBSTRING", "INSTR"],
+      "description": "Write a SQL query to extract the username (part before '@') from each email.",
+      "hints": ["Use SUBSTR(email, 1, INSTR(email, '@') - 1)."],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, email TEXT);\nINSERT INTO users VALUES\n(1, 'alice@example.com'),\n(2, 'john123@gmail.com'),\n(3, 'charlie@test.org');",
+      "solutionSQL": "SELECT SUBSTR(email, 1, INSTR(email, '@') - 1) AS username FROM users;",
+      "testCases": [
+        {
+          "name": "Extracted usernames",
+          "expectedRows": [
+            { "username": "alice" },
+            { "username": "john123" },
+            { "username": "charlie" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Calculate Age From Birthdate",
+      "slug": "calculate-age",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["DATE", "INTEGER CALCULATION"],
+      "description": "Write a SQL query to calculate each person's age based on their birth year.",
+      "hints": [
+        "Extract year and subtract from 2024.",
+        "Use SUBSTR(birthdate, 1, 4)."
+      ],
+      "setupSQL": "CREATE TABLE people(id INTEGER PRIMARY KEY, name TEXT, birthdate TEXT);\nINSERT INTO people VALUES\n(1, 'Alice', '1990-05-10'),\n(2, 'Bob', '1985-09-22'),\n(3, 'Charlie', '2000-01-15');",
+      "solutionSQL": "SELECT name, 2024 - CAST(SUBSTR(birthdate, 1, 4) AS INTEGER) AS age FROM people;",
+      "testCases": [
+        {
+          "name": "Calculated ages",
+          "expectedRows": [
+            { "name": "Alice", "age": 34 },
+            { "name": "Bob", "age": 39 },
+            { "name": "Charlie", "age": 24 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Mask Email Domains",
+      "slug": "mask-email-domains",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["SUBSTRING", "CONCAT"],
+      "description": "Write a SQL query to return the username and mask the domain part of each email as '***'. Output format: username@***",
+      "hints": ["Combine SUBSTR + CONCAT.", "Extract username using INSTR()."],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, email TEXT);\nINSERT INTO users VALUES\n(1, 'alice@example.com'),\n(2, 'bob@company.org');",
+      "solutionSQL": "SELECT CONCAT(SUBSTR(email, 1, INSTR(email, '@') - 1), '@***') AS masked_email FROM users;",
+      "testCases": [
+        {
+          "name": "Masked emails",
+          "expectedRows": [
+            { "masked_email": "alice@***" },
+            { "masked_email": "bob@***" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Extract Year and Month as YYYY-MM",
+      "slug": "extract-year-month",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["SUBSTRING", "DATE"],
+      "description": "Write a SQL query to return the year-month portion of each date.",
+      "hints": ["Use SUBSTR(date, 1, 7)."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, order_date TEXT);\nINSERT INTO orders VALUES\n(1, '2024-06-15'),\n(2, '2023-11-01');",
+      "solutionSQL": "SELECT SUBSTR(order_date, 1, 7) AS year_month FROM orders;",
+      "testCases": [
+        {
+          "name": "Year-month extracted",
+          "expectedRows": [
+            { "year_month": "2024-06" },
+            { "year_month": "2023-11" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Remove Country Code From Phone Number",
+      "slug": "remove-country-code",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["SUBSTRING", "INSTR"],
+      "description": "Given phone numbers starting with country code (e.g., +1-555-1234), extract only the local number.",
+      "hints": ["Find first '-' using INSTR() and substring from after it."],
+      "setupSQL": "CREATE TABLE contacts(id INTEGER PRIMARY KEY, phone TEXT);\nINSERT INTO contacts VALUES\n(1, '+1-555-1234'),\n(2, '+91-98765-43210');",
+      "solutionSQL": "SELECT SUBSTR(phone, INSTR(phone, '-') + 1) AS local_number FROM contacts;",
+      "testCases": [
+        {
+          "name": "Local phone numbers",
+          "expectedRows": [
+            { "local_number": "555-1234" },
+            { "local_number": "98765-43210" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Add 7 Days to a Date",
+      "slug": "add-7-days",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "String & Date Manipulation",
+      "tags": ["DATE", "DATEADD"],
+      "description": "Write a SQL query to add 7 days to each event date using SQLite's date() function.",
+      "hints": ["Use date(event_date, '+7 days')."],
+      "setupSQL": "CREATE TABLE events(id INTEGER PRIMARY KEY, event_date TEXT);\nINSERT INTO events VALUES\n(1, '2024-02-01'),\n(2, '2024-12-25');",
+      "solutionSQL": "SELECT id, date(event_date, '+7 days') AS new_date FROM events;",
+      "testCases": [
+        {
+          "name": "New dates",
+          "expectedRows": [
+            { "id": 1, "new_date": "2024-02-08" },
+            { "id": 2, "new_date": "2025-01-01" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "Sorting & Pagination": [
+    {
+      "title": "Sort Employees by Salary Ascending",
+      "slug": "sort-employees-salary-asc",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Sorting & Pagination",
+      "tags": ["ORDER BY"],
+      "description": "Write a SQL query to return employees sorted by salary in ascending order.",
+      "hints": ["Use ORDER BY salary ASC."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 70000),\n(2, 'Bob', 50000),\n(3, 'Charlie', 90000);",
+      "solutionSQL": "SELECT name, salary FROM employees ORDER BY salary ASC;",
+      "testCases": [
+        {
+          "name": "Sorted by salary ASC",
+          "expectedRows": [
+            { "name": "Bob", "salary": 50000 },
+            { "name": "Alice", "salary": 70000 },
+            { "name": "Charlie", "salary": 90000 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Sort Products Alphabetically",
+      "slug": "sort-products-alphabetically",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Sorting & Pagination",
+      "tags": ["ORDER BY"],
+      "description": "Write a SQL query to return all product names sorted A to Z.",
+      "hints": ["ORDER BY name ASC is the default."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO products VALUES\n(1, 'Laptop'),\n(2, 'Mouse'),\n(3, 'Keyboard');",
+      "solutionSQL": "SELECT name FROM products ORDER BY name ASC;",
+      "testCases": [
+        {
+          "name": "Alphabetical sort",
+          "expectedRows": [
+            { "name": "Keyboard" },
+            { "name": "Laptop" },
+            { "name": "Mouse" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Return the 2 Highest Salaries",
+      "slug": "top-2-salaries",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Sorting & Pagination",
+      "tags": ["ORDER BY", "LIMIT"],
+      "description": "Write a SQL query to return the top 2 highest employee salaries.",
+      "hints": ["Order by salary DESC then LIMIT 2."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 60000),\n(2, 'Bob', 75000),\n(3, 'Charlie', 90000),\n(4, 'David', 50000);",
+      "solutionSQL": "SELECT name, salary FROM employees ORDER BY salary DESC LIMIT 2;",
+      "testCases": [
+        {
+          "name": "Top 2 salaries",
+          "expectedRows": [
+            { "name": "Charlie", "salary": 90000 },
+            { "name": "Bob", "salary": 75000 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Return the First 3 Orders",
+      "slug": "first-3-orders",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Sorting & Pagination",
+      "tags": ["LIMIT"],
+      "description": "Write a query to return the first 3 orders.",
+      "hints": ["Use LIMIT 3."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 200),\n(2, 150),\n(3, 300),\n(4, 100),\n(5, 250);",
+      "solutionSQL": "SELECT * FROM orders LIMIT 3;",
+      "testCases": [
+        {
+          "name": "First 3 orders",
+          "expectedRows": [
+            { "id": 1, "amount": 200 },
+            { "id": 2, "amount": 150 },
+            { "id": 3, "amount": 300 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Paginate Products (Page 1)",
+      "slug": "paginate-products-page-1",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Sorting & Pagination",
+      "tags": ["LIMIT", "OFFSET"],
+      "description": "Retrieve the first page of products showing 2 products per page.",
+      "hints": ["Page 1 → OFFSET 0 LIMIT 2"],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO products VALUES\n(1, 'Keyboard'),\n(2, 'Laptop'),\n(3, 'Mouse'),\n(4, 'Tablet');",
+      "solutionSQL": "SELECT * FROM products ORDER BY id LIMIT 2 OFFSET 0;",
+      "testCases": [
+        {
+          "name": "Page 1 results",
+          "expectedRows": [
+            { "id": 1, "name": "Keyboard" },
+            { "id": 2, "name": "Laptop" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Retrieve the Most Recent 3 Logins",
+      "slug": "recent-3-logins",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Sorting & Pagination",
+      "tags": ["ORDER BY", "LIMIT"],
+      "description": "Write a SQL query to return the 3 most recent logins sorted by date descending.",
+      "hints": ["ORDER BY login_date DESC LIMIT 3."],
+      "setupSQL": "CREATE TABLE logins(id INTEGER PRIMARY KEY, user_id INTEGER, login_date TEXT);\nINSERT INTO logins VALUES\n(1, 1, '2024-01-05'),\n(2, 2, '2024-01-10'),\n(3, 3, '2023-12-30'),\n(4, 4, '2024-02-01');",
+      "solutionSQL": "SELECT * FROM logins ORDER BY login_date DESC LIMIT 3;",
+      "testCases": [
+        {
+          "name": "Most recent 3 logins",
+          "expectedRows": [
+            { "id": 4, "user_id": 4, "login_date": "2024-02-01" },
+            { "id": 2, "user_id": 2, "login_date": "2024-01-10" },
+            { "id": 1, "user_id": 1, "login_date": "2024-01-05" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Sort Users by Last Name",
+      "slug": "sort-users-by-lastname",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Sorting & Pagination",
+      "tags": ["ORDER BY", "SUBSTRING"],
+      "description": "Write a SQL query to sort users by their last name, assuming full_name is in 'First Last' format.",
+      "hints": [
+        "Extract last name using SUBSTR after the space.",
+        "ORDER BY that extracted value."
+      ],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, full_name TEXT);\nINSERT INTO users VALUES\n(1, 'Alice Johnson'),\n(2, 'Bob Smith'),\n(3, 'Charlie Brown');",
+      "solutionSQL": "SELECT full_name FROM users ORDER BY SUBSTR(full_name, INSTR(full_name, ' ') + 1) ASC;",
+      "testCases": [
+        {
+          "name": "Sorted by last name",
+          "expectedRows": [
+            { "full_name": "Charlie Brown" },
+            { "full_name": "Alice Johnson" },
+            { "full_name": "Bob Smith" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "Advanced Joins & Multi-Table Logic": [
+    {
+      "title": "Full Join Students and Fees Records",
+      "slug": "full-join-students-fees",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Advanced Joins & Multi-Table Logic",
+      "tags": ["FULL JOIN"],
+      "description": "Write a SQL query using FULL OUTER JOIN to return all students and all fee records, even if they don’t match.",
+      "hints": [
+        "Match students.id with fees.student_id.",
+        "Include rows from both tables even without matches."
+      ],
+      "setupSQL": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE fees(id INTEGER PRIMARY KEY, student_id INTEGER, amount INTEGER);\nINSERT INTO students VALUES\n(1, 'Alice'),\n(2, 'Bob'),\n(3, 'Charlie');\nINSERT INTO fees VALUES\n(1, 1, 500),\n(2, 3, 400),\n(3, 4, 300);",
+      "solutionSQL": "SELECT s.name, f.amount FROM students s FULL JOIN fees f ON s.id = f.student_id;",
+      "testCases": [
+        {
+          "name": "Full join students and fees",
+          "expectedRows": [
+            { "name": "Alice", "amount": 500 },
+            { "name": "Charlie", "amount": 400 },
+            { "name": "Bob", "amount": null },
+            { "name": null, "amount": 300 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Cross Join Products and Colors",
+      "slug": "cross-join-products-colors",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Advanced Joins & Multi-Table Logic",
+      "tags": ["CROSS JOIN"],
+      "description": "Write a SQL query to produce all possible combinations of products and colors using CROSS JOIN.",
+      "hints": ["CROSS JOIN = Cartesian product."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE colors(id INTEGER PRIMARY KEY, color TEXT);\nINSERT INTO products VALUES\n(1, 'Shirt'),\n(2, 'Shoes');\nINSERT INTO colors VALUES\n(1, 'Red'),\n(2, 'Blue');",
+      "solutionSQL": "SELECT p.name, c.color FROM products p CROSS JOIN colors c;",
+      "testCases": [
+        {
+          "name": "Cartesian product",
+          "expectedRows": [
+            { "name": "Shirt", "color": "Red" },
+            { "name": "Shirt", "color": "Blue" },
+            { "name": "Shoes", "color": "Red" },
+            { "name": "Shoes", "color": "Blue" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Employees Earning More Than Their Managers",
+      "slug": "employees-more-than-managers",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Advanced Joins & Multi-Table Logic",
+      "tags": ["SELF JOIN", "COMPARISON"],
+      "description": "Write a SQL query to return employees whose salary is higher than their manager’s salary.",
+      "hints": ["Self join employees table as e (employee) and m (manager)."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER, manager_id INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 120000, NULL),\n(2, 'Bob', 90000, 1),\n(3, 'Charlie', 130000, 1),\n(4, 'David', 85000, 2);",
+      "solutionSQL": "SELECT e.name FROM employees e JOIN employees m ON e.manager_id = m.id WHERE e.salary > m.salary;",
+      "testCases": [
+        {
+          "name": "Employees earning more than manager",
+          "expectedRows": [{ "name": "Charlie" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Products Never Ordered",
+      "slug": "products-never-ordered",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Advanced Joins & Multi-Table Logic",
+      "tags": ["LEFT JOIN", "NULL CHECK"],
+      "description": "Return all products that have never appeared in the orders table.",
+      "hints": ["LEFT JOIN then filter WHERE order_id IS NULL."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, product_id INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop'), (2, 'Mouse'), (3, 'Keyboard');\nINSERT INTO orders VALUES (1, 1), (2, 3);",
+      "solutionSQL": "SELECT p.name FROM products p LEFT JOIN orders o ON p.id = o.product_id WHERE o.product_id IS NULL;",
+      "testCases": [
+        {
+          "name": "Unordered products",
+          "expectedRows": [{ "name": "Mouse" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Find City With Most Customers",
+      "slug": "city-with-most-customers",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Advanced Joins & Multi-Table Logic",
+      "tags": ["JOIN", "GROUP BY", "COUNT"],
+      "description": "Return the city that has the highest number of customers.",
+      "hints": [
+        "Join cities → customers, then GROUP BY city.",
+        "Use ORDER BY COUNT DESC LIMIT 1."
+      ],
+      "setupSQL": "CREATE TABLE cities(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, city_id INTEGER);\nINSERT INTO cities VALUES (1, 'NYC'), (2, 'Chicago'), (3, 'LA');\nINSERT INTO customers VALUES\n(1, 'Alice', 1),\n(2, 'Bob', 1),\n(3, 'Charlie', 2),\n(4, 'David', 1);",
+      "solutionSQL": "SELECT ci.name AS city, COUNT(c.id) AS customer_count FROM cities ci JOIN customers c ON ci.id = c.city_id GROUP BY ci.id ORDER BY customer_count DESC LIMIT 1;",
+      "testCases": [
+        {
+          "name": "City with most customers",
+          "expectedRows": [{ "city": "NYC", "customer_count": 3 }],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Multi-Level Join Order Supply Chain",
+      "slug": "order-supply-chain-join",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Advanced Joins & Multi-Table Logic",
+      "tags": ["MULTIPLE JOINS"],
+      "description": "Write a query to show each order along with product name, supplier name, and region name.",
+      "hints": [
+        "Perform a 4-table join chain: orders → products → suppliers → regions."
+      ],
+      "setupSQL": "CREATE TABLE regions(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE suppliers(id INTEGER PRIMARY KEY, name TEXT, region_id INTEGER);\nCREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, supplier_id INTEGER);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, product_id INTEGER, amount INTEGER);\nINSERT INTO regions VALUES(1, 'North'), (2, 'South');\nINSERT INTO suppliers VALUES(1, 'TechCorp', 1), (2, 'HomeMakers', 2);\nINSERT INTO products VALUES(1, 'Laptop', 1), (2, 'Desk', 2);\nINSERT INTO orders VALUES(1, 1, 800), (2, 2, 300);",
+      "solutionSQL": "SELECT o.id AS order_id, p.name AS product, s.name AS supplier, r.name AS region FROM orders o JOIN products p ON o.product_id = p.id JOIN suppliers s ON p.supplier_id = s.id JOIN regions r ON s.region_id = r.id;",
+      "testCases": [
+        {
+          "name": "Order supply chain",
+          "expectedRows": [
+            {
+              "order_id": 1,
+              "product": "Laptop",
+              "supplier": "TechCorp",
+              "region": "North"
+            },
+            {
+              "order_id": 2,
+              "product": "Desk",
+              "supplier": "HomeMakers",
+              "region": "South"
+            }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "Set Operations": [
+    {
+      "title": "Cities That Exist in Both Customers and Suppliers",
+      "slug": "cities-intersect",
+      "difficulty": "Medium",
+      "category": "Set Operations",
+      "mode": "read",
+      "tags": ["INTERSECT"],
+      "description": "Return cities that appear in both customers and suppliers.",
+      "hints": ["Use INTERSECT for overlapping values."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, city TEXT);\nCREATE TABLE suppliers(id INTEGER PRIMARY KEY, name TEXT, city TEXT);\nINSERT INTO customers VALUES\n(1, 'Alice', 'New York'),\n(2, 'Bob', 'Chicago');\nINSERT INTO suppliers VALUES\n(1, 'TechCorp', 'Chicago'),\n(2, 'BrightWorks', 'Boston');",
+      "solutionSQL": "SELECT city FROM customers INTERSECT SELECT city FROM suppliers;",
+      "testCases": [
+        {
+          "name": "Common cities",
+          "expectedRows": [{ "city": "Chicago" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Cities in Customers but Not in Suppliers",
+      "slug": "cities-except",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Set Operations",
+      "tags": ["EXCEPT"],
+      "description": "Return all cities that appear in customers but not suppliers.",
+      "hints": ["Use EXCEPT to filter values not present in the second set."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, city TEXT);\nCREATE TABLE suppliers(id INTEGER PRIMARY KEY, name TEXT, city TEXT);\nINSERT INTO customers VALUES\n(1, 'Alice', 'New York'),\n(2, 'Bob', 'Chicago');\nINSERT INTO suppliers VALUES\n(1, 'TechCorp', 'Chicago');",
+      "solutionSQL": "SELECT city FROM customers EXCEPT SELECT city FROM suppliers;",
+      "testCases": [
+        {
+          "name": "Customer-only cities",
+          "expectedRows": [{ "city": "New York" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Combine Employee and Manager Names",
+      "slug": "employees-managers-union",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Set Operations",
+      "tags": ["UNION"],
+      "description": "Return all unique names appearing either as employees or managers.",
+      "hints": ["SELECT name from employees UNION SELECT name from managers."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE managers(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice'), (2, 'Bob');\nINSERT INTO managers VALUES\n(1, 'Bob'), (2, 'Charlie');",
+      "solutionSQL": "SELECT name FROM employees UNION SELECT name FROM managers;",
+      "testCases": [
+        {
+          "name": "Unique names",
+          "expectedRows": [
+            { "name": "Alice" },
+            { "name": "Bob" },
+            { "name": "Charlie" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Students Who Are Also Teachers",
+      "slug": "students-teachers-intersect",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Set Operations",
+      "tags": ["INTERSECT"],
+      "description": "Return names that appear in both the students and teachers tables.",
+      "hints": ["Use INTERSECT to get shared values."],
+      "setupSQL": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE teachers(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO students VALUES(1, 'Alice'), (2, 'Bob'), (3, 'Charlie');\nINSERT INTO teachers VALUES(1, 'Charlie'), (2, 'David');",
+      "solutionSQL": "SELECT name FROM students INTERSECT SELECT name FROM teachers;",
+      "testCases": [
+        {
+          "name": "Names in both",
+          "expectedRows": [{ "name": "Charlie" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Products Sold in Store A but Not in Store B",
+      "slug": "store-a-not-store-b",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Set Operations",
+      "tags": ["EXCEPT"],
+      "description": "Return products that were sold in Store A but not in Store B.",
+      "hints": ["Use EXCEPT to find A - B difference."],
+      "setupSQL": "CREATE TABLE store_a_products(id INTEGER PRIMARY KEY, product TEXT);\nCREATE TABLE store_b_products(id INTEGER PRIMARY KEY, product TEXT);\nINSERT INTO store_a_products VALUES\n(1, 'Laptop'), (2, 'Mouse'), (3, 'Keyboard');\nINSERT INTO store_b_products VALUES\n(1, 'Mouse'), (2, 'Tablet');",
+      "solutionSQL": "SELECT product FROM store_a_products EXCEPT SELECT product FROM store_b_products;",
+      "testCases": [
+        {
+          "name": "Store A only",
+          "expectedRows": [{ "product": "Laptop" }, { "product": "Keyboard" }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Customers Who Ordered in January but Not in February",
+      "slug": "ordered-jan-not-feb",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Set Operations",
+      "tags": ["EXCEPT"],
+      "description": "Return customer IDs that appear in January orders but not in February orders.",
+      "hints": ["Use EXCEPT with SELECT customer_id FROM ..."],
+      "setupSQL": "CREATE TABLE january_orders(id INTEGER PRIMARY KEY, customer_id INTEGER);\nCREATE TABLE february_orders(id INTEGER PRIMARY KEY, customer_id INTEGER);\nINSERT INTO january_orders VALUES\n(1, 101), (2, 102), (3, 103);\nINSERT INTO february_orders VALUES\n(1, 102), (2, 104);",
+      "solutionSQL": "SELECT customer_id FROM january_orders EXCEPT SELECT customer_id FROM february_orders;",
+      "testCases": [
+        {
+          "name": "Ordered in Jan but not Feb",
+          "expectedRows": [{ "customer_id": 101 }, { "customer_id": 103 }],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "Window Functions": [
+    {
+      "title": "Assign Row Numbers to Employees by Salary",
+      "slug": "row-number-employees-salary",
+      "difficulty": "Medium",
+      "category": "Window Functions",
+      "mode": "read",
+      "tags": ["ROW_NUMBER", "ORDER BY"],
+      "description": "Write a SQL query to assign a row number to each employee ordered by salary descending.",
+      "hints": ["Use ROW_NUMBER() OVER(ORDER BY salary DESC)."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 70000),\n(2, 'Bob', 90000),\n(3, 'Charlie', 85000),\n(4, 'David', 70000);",
+      "solutionSQL": "SELECT name, salary, ROW_NUMBER() OVER(ORDER BY salary DESC) AS rn FROM employees;",
+      "testCases": [
+        {
+          "name": "Row numbers by salary",
+          "expectedRows": [
+            { "name": "Bob", "salary": 90000, "rn": 1 },
+            { "name": "Charlie", "salary": 85000, "rn": 2 },
+            { "name": "Alice", "salary": 70000, "rn": 3 },
+            { "name": "David", "salary": 70000, "rn": 4 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Rank Students by Score",
+      "slug": "rank-students-score",
+      "difficulty": "Medium",
+      "category": "Window Functions",
+      "mode": "read",
+      "tags": ["RANK", "ORDER BY"],
+      "description": "Write a SQL query to assign ranks to students based on score. If two students have the same score, they must receive the same rank.",
+      "hints": ["Use RANK() OVER(ORDER BY score DESC)."],
+      "setupSQL": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT, score INTEGER);\nINSERT INTO students VALUES\n(1, 'Alice', 95),\n(2, 'Bob', 88),\n(3, 'Charlie', 95),\n(4, 'David', 80);",
+      "solutionSQL": "SELECT name, score, RANK() OVER(ORDER BY score DESC) AS rank FROM students;",
+      "testCases": [
+        {
+          "name": "Rank by score with ties",
+          "expectedRows": [
+            { "name": "Alice", "score": 95, "rank": 1 },
+            { "name": "Charlie", "score": 95, "rank": 1 },
+            { "name": "Bob", "score": 88, "rank": 3 },
+            { "name": "David", "score": 80, "rank": 4 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Order Products Within Each Category",
+      "slug": "row-number-products-per-category",
+      "difficulty": "Medium",
+      "category": "Window Functions",
+      "mode": "read",
+      "tags": ["ROW_NUMBER", "PARTITION BY"],
+      "description": "Assign row numbers to products within each category ordered by price descending.",
+      "hints": ["Use PARTITION BY category_id."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, category TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop', 'Electronics', 900),\n(2, 'Mouse', 'Electronics', 50),\n(3, 'Desk', 'Furniture', 200),\n(4, 'Chair', 'Furniture', 120);",
+      "solutionSQL": "SELECT name, category, price, ROW_NUMBER() OVER(PARTITION BY category ORDER BY price DESC) AS rn FROM products;",
+      "testCases": [
+        {
+          "name": "Row numbers inside category",
+          "expectedRows": [
+            {
+              "name": "Laptop",
+              "category": "Electronics",
+              "price": 900,
+              "rn": 1
+            },
+            {
+              "name": "Mouse",
+              "category": "Electronics",
+              "price": 50,
+              "rn": 2
+            },
+            { "name": "Desk", "category": "Furniture", "price": 200, "rn": 1 },
+            { "name": "Chair", "category": "Furniture", "price": 120, "rn": 2 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Get First Order for Each Customer",
+      "slug": "first-order-per-customer",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Window Functions",
+      "tags": ["ROW_NUMBER", "PARTITION BY"],
+      "description": "Return each customer’s first order based on order date.",
+      "hints": [
+        "Use ROW_NUMBER() over (PARTITION BY customer_id ORDER BY order_date)."
+      ],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 101, '2024-01-02', 200),\n(2, 101, '2024-01-05', 150),\n(3, 102, '2024-01-01', 300);",
+      "solutionSQL": "SELECT id, customer_id, amount FROM (SELECT *, ROW_NUMBER() OVER(PARTITION BY customer_id ORDER BY order_date) AS rn FROM orders) WHERE rn = 1;",
+      "testCases": [
+        {
+          "name": "First order of each customer",
+          "expectedRows": [
+            { "id": 1, "customer_id": 101, "amount": 200 },
+            { "id": 3, "customer_id": 102, "amount": 300 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Dense Rank Orders by Amount Within Each Month",
+      "slug": "dense-rank-orders-month",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Window Functions",
+      "tags": ["DENSE_RANK", "PARTITION BY"],
+      "description": "Assign dense rank to orders inside each month based on amount.",
+      "hints": ["Extract month using SUBSTR(date, 1, 7)."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, order_date TEXT, amount INTEGER);\nINSERT INTO orders VALUES\n(1, '2024-01-10', 200),\n(2, '2024-01-15', 300),\n(3, '2024-02-05', 500),\n(4, '2024-02-20', 500);",
+      "solutionSQL": "SELECT id, amount, DENSE_RANK() OVER(PARTITION BY SUBSTR(order_date,1,7) ORDER BY amount DESC) AS rnk FROM orders;",
+      "testCases": [
+        {
+          "name": "Dense rank per month",
+          "expectedRows": [
+            { "id": 2, "amount": 300, "rnk": 1 },
+            { "id": 1, "amount": 200, "rnk": 2 },
+            { "id": 3, "amount": 500, "rnk": 1 },
+            { "id": 4, "amount": 500, "rnk": 1 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Dense Rank Products by Category and Price",
+      "slug": "dense-rank-products-category-price",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Window Functions",
+      "tags": ["DENSE_RANK", "PARTITION BY"],
+      "description": "Rank products inside each category by price using DENSE_RANK.",
+      "hints": ["Use PARTITION BY category ORDER BY price DESC."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, category TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'TV', 'Electronics', 800),\n(2, 'Camera', 'Electronics', 800),\n(3, 'Sofa', 'Furniture', 1200),\n(4, 'Table', 'Furniture', 600);",
+      "solutionSQL": "SELECT name, category, price, DENSE_RANK() OVER(PARTITION BY category ORDER BY price DESC) AS rnk FROM products;",
+      "testCases": [
+        {
+          "name": "Rank within category",
+          "expectedRows": [
+            { "name": "TV", "category": "Electronics", "price": 800, "rnk": 1 },
+            {
+              "name": "Camera",
+              "category": "Electronics",
+              "price": 800,
+              "rnk": 1
+            },
+            {
+              "name": "Sofa",
+              "category": "Furniture",
+              "price": 1200,
+              "rnk": 1
+            },
+            { "name": "Table", "category": "Furniture", "price": 600, "rnk": 2 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Top 3 Highest Spending Customers",
+      "slug": "top-3-spending-customers",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Window Functions",
+      "tags": ["RANK"],
+      "description": "Use RANK to find the top 3 highest spending customers based on their total purchase amounts.",
+      "hints": ["Aggregate first, then apply RANK using a subquery."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 1, 300),\n(2, 1, 200),\n(3, 2, 700),\n(4, 3, 500),\n(5, 4, 100);",
+      "solutionSQL": "SELECT customer_id, total_amount, rnk FROM (\n  SELECT customer_id, SUM(amount) AS total_amount,\n         RANK() OVER(ORDER BY SUM(amount) DESC) AS rnk\n  FROM orders\n  GROUP BY customer_id\n) WHERE rnk <= 3;",
+      "testCases": [
+        {
+          "name": "Top spending customers",
+          "expectedRows": [
+            { "customer_id": 2, "total_amount": 700, "rnk": 1 },
+            { "customer_id": 3, "total_amount": 500, "rnk": 2 },
+            { "customer_id": 1, "total_amount": 500, "rnk": 2 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "Complex Aggregation Patterns": [
+    {
+      "title": "Total Orders and Total Amount per Customer",
+      "slug": "total-orders-and-amount-per-customer",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Complex Aggregation Patterns",
+      "tags": ["GROUP BY", "SUM", "COUNT"],
+      "description": "Write a SQL query to return, for each customer, how many orders they placed and the total amount they spent.",
+      "hints": [
+        "Use COUNT(*) to count orders per customer.",
+        "Use SUM(amount) to get total spent.",
+        "Group by customer_id."
+      ],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 101, 200),\n(2, 101, 150),\n(3, 102, 300),\n(4, 103, 100),\n(5, 103, 250);",
+      "solutionSQL": "SELECT customer_id, COUNT(*) AS order_count, SUM(amount) AS total_spent FROM orders GROUP BY customer_id;",
+      "testCases": [
+        {
+          "name": "Orders and totals per customer",
+          "expectedRows": [
+            { "customer_id": 101, "order_count": 2, "total_spent": 350 },
+            { "customer_id": 102, "order_count": 1, "total_spent": 300 },
+            { "customer_id": 103, "order_count": 2, "total_spent": 350 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Monthly Sales Pivoted Into Columns",
+      "slug": "monthly-sales-pivot-columns",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Complex Aggregation Patterns",
+      "tags": ["PIVOT", "CASE", "SUM"],
+      "description": "Write a SQL query to show total sales for January, February, and March 2024 in separate columns.",
+      "hints": [
+        "Use SUM(CASE WHEN ...) for each month.",
+        "Compare the month part of order_date using SUBSTR(order_date, 1, 7)."
+      ],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, order_date TEXT, amount INTEGER);\nINSERT INTO orders VALUES\n(1, '2024-01-05', 200),\n(2, '2024-01-20', 100),\n(3, '2024-02-10', 300),\n(4, '2024-03-01', 150),\n(5, '2024-03-18', 250);",
+      "solutionSQL": "SELECT\n  SUM(CASE WHEN SUBSTR(order_date, 1, 7) = '2024-01' THEN amount ELSE 0 END) AS jan_2024,\n  SUM(CASE WHEN SUBSTR(order_date, 1, 7) = '2024-02' THEN amount ELSE 0 END) AS feb_2024,\n  SUM(CASE WHEN SUBSTR(order_date, 1, 7) = '2024-03' THEN amount ELSE 0 END) AS mar_2024\nFROM orders;",
+      "testCases": [
+        {
+          "name": "Pivot monthly sales",
+          "expectedRows": [
+            { "jan_2024": 300, "feb_2024": 300, "mar_2024": 400 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Count Orders by Status With Grand Total",
+      "slug": "orders-by-status-with-total",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Complex Aggregation Patterns",
+      "tags": ["GROUP BY", "UNION ALL", "COUNT"],
+      "description": "Write a SQL query to count how many orders are in each status and also include a final row showing the grand total of all orders.",
+      "hints": [
+        "First group by status to get counts per status.",
+        "Use UNION ALL to add a grand total row.",
+        "For the total row, you can use 'ALL' as the status label."
+      ],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, status TEXT);\nINSERT INTO orders VALUES\n(1, 'Pending'),\n(2, 'Shipped'),\n(3, 'Pending'),\n(4, 'Delivered'),\n(5, 'Shipped');",
+      "solutionSQL": "SELECT status, COUNT(*) AS order_count\nFROM orders\nGROUP BY status\nUNION ALL\nSELECT 'ALL' AS status, COUNT(*) AS order_count\nFROM orders;",
+      "testCases": [
+        {
+          "name": "Status counts with grand total",
+          "expectedRows": [
+            { "status": "Pending", "order_count": 2 },
+            { "status": "Shipped", "order_count": 2 },
+            { "status": "Delivered", "order_count": 1 },
+            { "status": "ALL", "order_count": 5 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Customers With More Than 2 Orders and Their Average Order Amount",
+      "slug": "customers-more-than-two-orders-avg",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Complex Aggregation Patterns",
+      "tags": ["GROUP BY", "HAVING", "AVG"],
+      "description": "Write a SQL query to return customers who have placed more than 2 orders and show their average order amount.",
+      "hints": [
+        "Use GROUP BY customer_id.",
+        "Use HAVING COUNT(*) > 2.",
+        "Compute AVG(amount) in the same grouped query."
+      ],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 101, 200),\n(2, 101, 100),\n(3, 101, 300),\n(4, 102, 400),\n(5, 103, 150),\n(6, 103, 150),\n(7, 103, 150);",
+      "solutionSQL": "SELECT customer_id, COUNT(*) AS order_count, AVG(amount) AS avg_amount\nFROM orders\nGROUP BY customer_id\nHAVING COUNT(*) > 2;",
+      "testCases": [
+        {
+          "name": "Customers with >2 orders",
+          "expectedRows": [
+            { "customer_id": 101, "order_count": 3, "avg_amount": 200.0 },
+            { "customer_id": 103, "order_count": 3, "avg_amount": 150.0 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Find Department With Highest Average Salary",
+      "slug": "department-highest-average-salary",
+      "difficulty": "Medium",
+      "mode": "read",
+      "category": "Complex Aggregation Patterns",
+      "tags": ["GROUP BY", "AVG", "ORDER BY", "LIMIT"],
+      "description": "Write a SQL query to find the department that has the highest average salary and return only that department and its average salary.",
+      "hints": [
+        "Group by department and calculate AVG(salary).",
+        "Order the result by AVG(salary) in descending order.",
+        "Use LIMIT 1 to keep only the highest."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR', 60000),\n(2, 'Bob', 'Engineering', 95000),\n(3, 'Charlie', 'Engineering', 85000),\n(4, 'David', 'Finance', 70000);",
+      "solutionSQL": "SELECT department, AVG(salary) AS avg_salary\nFROM employees\nGROUP BY department\nORDER BY avg_salary DESC\nLIMIT 1;",
+      "testCases": [
+        {
+          "name": "Department with highest avg salary",
+          "expectedRows": [
+            { "department": "Engineering", "avg_salary": 90000.0 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "DML Operations": [
+    {
+      "title": "Insert Multiple Products Into Products Table",
+      "slug": "insert-multiple-products",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DML Operations",
+      "tags": ["INSERT"],
+      "description": "Insert two new products: (3, 'Keyboard', 70) and (4, 'Monitor', 250).",
+      "hints": [
+        "You can insert multiple rows using a single INSERT statement."
+      ],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES (1, 'Laptop', 900), (2, 'Mouse', 30);",
+      "solutionSQL": "INSERT INTO products VALUES (3, 'Keyboard', 70), (4, 'Monitor', 250);",
+      "testCases": [
+        {
+          "name": "Final table state",
+          "expectedRows": [
+            { "id": 1, "name": "Laptop", "price": 900 },
+            { "id": 2, "name": "Mouse", "price": 30 },
+            { "id": 3, "name": "Keyboard", "price": 70 },
+            { "id": 4, "name": "Monitor", "price": 250 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Inserted rows only",
+          "expectedRows": [
+            { "id": 3, "name": "Keyboard", "price": 70 },
+            { "id": 4, "name": "Monitor", "price": 250 }
+          ],
+          "ordered": false,
+          "checkType": "affected_rows"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Update a Customer’s Name",
+      "slug": "update-customer-name",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DML Operations",
+      "tags": ["UPDATE"],
+      "description": "Update the name of the customer with id 2 to 'Robert'.",
+      "hints": ["Use UPDATE customers SET name='Robert' WHERE id=2."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO customers VALUES (1, 'Alice'), (2, 'Bob');",
+      "solutionSQL": "UPDATE customers SET name = 'Robert' WHERE id = 2;",
+      "testCases": [
+        {
+          "name": "Final table state",
+          "expectedRows": [
+            { "id": 1, "name": "Alice" },
+            { "id": 2, "name": "Robert" }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Updated row only",
+          "expectedRows": [{ "id": 2, "name": "Robert" }],
+          "ordered": false,
+          "checkType": "affected_rows"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Apply a 10% Discount to Products Above $100",
+      "slug": "discount-products-above-100",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DML Operations",
+      "tags": ["UPDATE"],
+      "description": "Reduce the price of all products costing more than 100 by 10%.",
+      "hints": ["Use price = price * 0.9 WHERE price > 100."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop', 900),\n(2, 'Mouse', 30),\n(3, 'Desk', 200);",
+      "solutionSQL": "UPDATE products SET price = price * 0.9 WHERE price > 100;",
+      "testCases": [
+        {
+          "name": "Final table state",
+          "expectedRows": [
+            { "id": 1, "name": "Laptop", "price": 810 },
+            { "id": 2, "name": "Mouse", "price": 30 },
+            { "id": 3, "name": "Desk", "price": 180 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Affected rows only",
+          "expectedRows": [
+            { "id": 1, "name": "Laptop", "price": 810 },
+            { "id": 3, "name": "Desk", "price": 180 }
+          ],
+          "ordered": false,
+          "checkType": "affected_rows"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Delete All Orders Below Amount 100",
+      "slug": "delete-small-orders",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DML Operations",
+      "tags": ["DELETE"],
+      "description": "Remove all orders with amount less than 100.",
+      "hints": ["Use DELETE FROM orders WHERE amount < 100."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 50), (2, 200), (3, 70), (4, 300);",
+      "solutionSQL": "DELETE FROM orders WHERE amount < 100;",
+      "testCases": [
+        {
+          "name": "Final table state",
+          "expectedRows": [
+            { "id": 2, "amount": 200 },
+            { "id": 4, "amount": 300 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Deleted rows only",
+          "expectedRows": [
+            { "id": 1, "amount": 50 },
+            { "id": 3, "amount": 70 }
+          ],
+          "ordered": false,
+          "checkType": "affected_rows"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Increase Salaries by 5% for HR Department",
+      "slug": "update-hr-salaries",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DML Operations",
+      "tags": ["UPDATE"],
+      "description": "Increase the salary of all employees in the HR department by 5%.",
+      "hints": ["Use salary = salary * 1.05 WHERE department='HR'."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR', 60000),\n(2, 'Bob', 'Engineering', 95000),\n(3, 'Charlie', 'HR', 65000);",
+      "solutionSQL": "UPDATE employees SET salary = salary * 1.05 WHERE department = 'HR';",
+      "testCases": [
+        {
+          "name": "Final table state",
+          "expectedRows": [
+            { "id": 1, "name": "Alice", "department": "HR", "salary": 63000 },
+            {
+              "id": 2,
+              "name": "Bob",
+              "department": "Engineering",
+              "salary": 95000
+            },
+            { "id": 3, "name": "Charlie", "department": "HR", "salary": 68250 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Affected rows only",
+          "expectedRows": [
+            { "id": 1, "salary": 63000 },
+            { "id": 3, "salary": 68250 }
+          ],
+          "ordered": false,
+          "checkType": "affected_rows"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Delete Employees With Null Department",
+      "slug": "delete-employees-null-dept",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DML Operations",
+      "tags": ["DELETE"],
+      "description": "Delete all employees who do not have a department assigned.",
+      "hints": ["Use WHERE department IS NULL."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR'),\n(2, 'Bob', NULL),\n(3, 'Charlie', NULL);",
+      "solutionSQL": "DELETE FROM employees WHERE department IS NULL;",
+      "testCases": [
+        {
+          "name": "Final table state",
+          "expectedRows": [{ "id": 1, "name": "Alice", "department": "HR" }],
+          "ordered": false,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Deleted rows only",
+          "expectedRows": [
+            { "id": 2, "name": "Bob", "department": null },
+            { "id": 3, "name": "Charlie", "department": null }
+          ],
+          "ordered": false,
+          "checkType": "affected_rows"
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "DDL Operations": [
+    {
+      "title": "Create Customers Table With Primary Key",
+      "slug": "create-customers-table-pk",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DDL Operations",
+      "tags": ["CREATE TABLE", "PRIMARY KEY"],
+      "description": "Create a customers table with id as PRIMARY KEY and name as TEXT.",
+      "hints": ["Use PRIMARY KEY on the id column."],
+      "setupSQL": "",
+      "solutionSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);",
+      "testCases": [
+        {
+          "name": "Validate table structure",
+          "expectedRows": [
+            {
+              "cid": 0,
+              "name": "id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "name",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Create Products Table With Price Check Constraint",
+      "slug": "create-products-price-check",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DDL Operations",
+      "tags": ["CREATE TABLE", "CHECK"],
+      "description": "Create a products table enforcing price > 0 using CHECK constraint.",
+      "hints": ["Use CHECK(price > 0)."],
+      "setupSQL": "",
+      "solutionSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER CHECK(price > 0));",
+      "testCases": [
+        {
+          "name": "Validate table structure",
+          "expectedRows": [
+            {
+              "cid": 0,
+              "name": "id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "name",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 2,
+              "name": "price",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Create Orders Table With Foreign Key to Customers",
+      "slug": "create-orders-fk-customers",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DDL Operations",
+      "tags": ["CREATE TABLE", "FOREIGN KEY"],
+      "description": "Create an orders table referencing customers(id) as a foreign key.",
+      "hints": ["Use FOREIGN KEY(customer_id) REFERENCES customers(id)."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);",
+      "solutionSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER, FOREIGN KEY(customer_id) REFERENCES customers(id));",
+      "testCases": [
+        {
+          "name": "Validate table structure",
+          "expectedRows": [
+            {
+              "cid": 0,
+              "name": "id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "customer_id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 2,
+              "name": "amount",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Rename Column name to full_name",
+      "slug": "alter-rename-column",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DDL Operations",
+      "tags": ["ALTER TABLE", "RENAME COLUMN"],
+      "description": "Rename the column name to full_name in the customers table.",
+      "hints": ["Use ALTER TABLE ... RENAME COLUMN name TO full_name."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO customers VALUES (1, 'Alice');",
+      "solutionSQL": "ALTER TABLE customers RENAME COLUMN name TO full_name;",
+      "testCases": [
+        {
+          "name": "Final table structure",
+          "expectedRows": [
+            {
+              "cid": 0,
+              "name": "id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "full_name",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Create Reviews Table With Default Rating",
+      "slug": "create-reviews-default-rating",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "DDL Operations",
+      "tags": ["CREATE TABLE", "DEFAULT"],
+      "description": "Create a reviews table where rating defaults to 5 if not provided.",
+      "hints": ["Use rating INTEGER DEFAULT 5."],
+      "setupSQL": "",
+      "solutionSQL": "CREATE TABLE reviews(id INTEGER PRIMARY KEY, comment TEXT, rating INTEGER DEFAULT 5);",
+      "testCases": [
+        {
+          "name": "Validate structure",
+          "expectedRows": [
+            {
+              "cid": 0,
+              "name": "id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "comment",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 2,
+              "name": "rating",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": "5",
+              "pk": 0
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 15
+    }
+  ],
+  "Normalization & Keys": [
+    {
+      "title": "Create Enrollment Table With Composite Primary Key",
+      "slug": "create-enrollment-composite-pk",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "Normalization & Keys",
+      "tags": ["PRIMARY KEY", "COMPOSITE KEY", "CREATE TABLE"],
+      "description": "Create an enrollment table where (student_id, course_id) is the composite primary key.",
+      "hints": ["Use PRIMARY KEY(student_id, course_id)."],
+      "setupSQL": "",
+      "solutionSQL": "CREATE TABLE enrollment(student_id INTEGER, course_id INTEGER, grade TEXT, PRIMARY KEY(student_id, course_id));",
+      "testCases": [
+        {
+          "name": "Validate composite primary key structure",
+          "expectedRows": [
+            {
+              "cid": 0,
+              "name": "student_id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "course_id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 2
+            },
+            {
+              "cid": 2,
+              "name": "grade",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 15
+    },
+    {
+      "title": "Create Products Table With Unique Name+Brand Combination",
+      "slug": "create-products-unique-name-brand",
+      "difficulty": "Medium",
+      "mode": "write",
+      "category": "Normalization & Keys",
+      "tags": ["UNIQUE", "COMPOSITE CONSTRAINT"],
+      "description": "Ensure that a product name combined with its brand is always unique.",
+      "hints": ["Use UNIQUE(name, brand)."],
+      "setupSQL": "",
+      "solutionSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, brand TEXT, UNIQUE(name, brand));",
+      "testCases": [
+        {
+          "name": "Validate structure",
+          "expectedRows": [
+            {
+              "cid": 0,
+              "name": "id",
+              "type": "INTEGER",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 1
+            },
+            {
+              "cid": 1,
+              "name": "name",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            },
+            {
+              "cid": 2,
+              "name": "brand",
+              "type": "TEXT",
+              "notnull": 0,
+              "dflt_value": null,
+              "pk": 0
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 15
+    }
+  ]
+}

@@ -1,0 +1,1068 @@
+{
+  "Query Optimization": [
+    {
+      "title": "Optimize Subquery by Replacing With JOIN",
+      "slug": "optimize-subquery-to-join",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Query Optimization",
+      "tags": ["JOIN", "SUBQUERY", "OPTIMIZATION"],
+      "description": "The existing query uses a subquery: SELECT * FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE city='Boston'). Rewrite it using an INNER JOIN for better performance.",
+      "hints": ["Replace IN (SELECT...) with JOIN.", "Filter in ON or WHERE."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, city TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\nINSERT INTO customers VALUES (1, 'Alice', 'Boston'), (2, 'Bob', 'Chicago');\nINSERT INTO orders VALUES (1, 1, 300), (2, 2, 200), (3, 1, 150);",
+      "solutionSQL": "SELECT o.* FROM orders o JOIN customers c ON o.customer_id = c.id WHERE c.city = 'Boston';",
+      "testCases": [
+        {
+          "name": "Orders from Boston customers",
+          "expectedRows": [
+            { "id": 1, "customer_id": 1, "amount": 300 },
+            { "id": 3, "customer_id": 1, "amount": 150 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Optimize OR Condition Using UNION",
+      "slug": "optimize-or-to-union",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Query Optimization",
+      "tags": ["UNION", "OPTIMIZATION"],
+      "description": "Rewrite the query SELECT * FROM products WHERE category='Electronics' OR price > 500 to use UNION so indexes can be used efficiently.",
+      "hints": ["Split OR into two indexed queries using UNION."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, category TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop', 'Electronics', 900),\n(2, 'Camera', 'Electronics', 400),\n(3, 'Sofa', 'Furniture', 1200),\n(4, 'Table', 'Furniture', 200);",
+      "solutionSQL": "SELECT * FROM products WHERE category='Electronics'\nUNION\nSELECT * FROM products WHERE price > 500;",
+      "testCases": [
+        {
+          "name": "Optimized OR condition equivalent output",
+          "expectedRows": [
+            {
+              "id": 1,
+              "name": "Laptop",
+              "category": "Electronics",
+              "price": 900
+            },
+            {
+              "id": 2,
+              "name": "Camera",
+              "category": "Electronics",
+              "price": 400
+            },
+            { "id": 3, "name": "Sofa", "category": "Furniture", "price": 1200 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Replace COUNT(DISTINCT) With Grouping",
+      "slug": "optimize-count-distinct",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Query Optimization",
+      "tags": ["GROUP BY", "DISTINCT", "OPTIMIZATION"],
+      "description": "The query SELECT COUNT(DISTINCT customer_id) FROM orders is slow on large datasets. Rewrite it using GROUP BY.",
+      "hints": ["Use SELECT customer_id FROM orders GROUP BY customer_id."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER);\nINSERT INTO orders VALUES\n(1,1),(2,1),(3,2),(4,3),(5,3);",
+      "solutionSQL": "SELECT COUNT(*) FROM (SELECT customer_id FROM orders GROUP BY customer_id);",
+      "testCases": [
+        {
+          "name": "Count distinct customers",
+          "expectedRows": [{ "COUNT(*)": 3 }],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Optimize NOT IN Using NOT EXISTS",
+      "slug": "optimize-not-in-to-not-exists",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Query Optimization",
+      "tags": ["NOT EXISTS", "SUBQUERY", "OPTIMIZATION"],
+      "description": "Rewrite SELECT * FROM employees WHERE id NOT IN (SELECT employee_id FROM payroll) using NOT EXISTS, which performs better and avoids NULL pitfalls.",
+      "hints": ["Use WHERE NOT EXISTS (SELECT 1 ...)."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE payroll(employee_id INTEGER);\nINSERT INTO employees VALUES (1,'Alice'),(2,'Bob'),(3,'Charlie');\nINSERT INTO payroll VALUES(1),(3);",
+      "solutionSQL": "SELECT e.* FROM employees e WHERE NOT EXISTS (SELECT 1 FROM payroll p WHERE p.employee_id = e.id);",
+      "testCases": [
+        {
+          "name": "Employees not in payroll",
+          "expectedRows": [{ "id": 2, "name": "Bob" }],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Rewrite Contains Search Using Full-Text Style Table",
+      "slug": "optimize-like-search",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Query Optimization",
+      "tags": ["FULLTEXT", "LIKE", "OPTIMIZATION"],
+      "description": "Searching using WHERE content LIKE '%phone%' is slow. Rewrite using a separate fulltext_search table.",
+      "hints": ["Store tokens/words in a separate indexed table."],
+      "setupSQL": "CREATE TABLE articles(id INTEGER PRIMARY KEY, content TEXT);\nINSERT INTO articles VALUES(1,'New phone released'),(2,'Laptop review'),(3,'Phone accessories available');",
+      "solutionSQL": "SELECT a.* FROM articles a JOIN article_search s ON a.id = s.article_id WHERE s.term = 'phone';",
+      "testCases": [
+        {
+          "name": "Expected rows matched by fulltext replacement",
+          "expectedRows": [
+            { "id": 1, "content": "New phone released" },
+            { "id": 3, "content": "Phone accessories available" }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "Triggers": [
+    {
+      "title": "Prevent Inserting Employees With Negative Salary",
+      "slug": "trigger-block-negative-salary",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Triggers",
+      "tags": ["BEFORE INSERT", "VALIDATION"],
+      "description": "Create a BEFORE INSERT trigger that prevents inserting an employee with a negative salary.",
+      "hints": ["Use SELECT RAISE(ABORT, 'message')."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);",
+      "solutionSQL": "CREATE TRIGGER prevent_negative_salary\nBEFORE INSERT ON employees\nFOR EACH ROW\nWHEN NEW.salary < 0\nBEGIN\n  SELECT RAISE(ABORT, 'Salary cannot be negative');\nEND;",
+      "testCases": [
+        {
+          "name": "Valid insert succeeds",
+          "expectedRows": [{ "id": 1, "name": "Alice", "salary": 50000 }],
+          "ordered": true,
+          "checkType": "final_table",
+          "userSQL": "INSERT INTO employees VALUES (1, 'Alice', 50000);"
+        },
+        {
+          "name": "Negative salary should fail",
+          "expectedError": "Salary cannot be negative",
+          "checkType": "error",
+          "userSQL": "INSERT INTO employees VALUES (2, 'Bob', -200);"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Log New Users Into Audit Log",
+      "slug": "trigger-log-new-user",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Triggers",
+      "tags": ["AFTER INSERT", "AUDIT"],
+      "description": "Whenever a new user is inserted, automatically insert a log entry into audit_log.",
+      "hints": ["Use AFTER INSERT ON users.", "Use NEW.id, NEW.name."],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE audit_log(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, action TEXT);",
+      "solutionSQL": "CREATE TRIGGER log_new_user\nAFTER INSERT ON users\nFOR EACH ROW\nBEGIN\n  INSERT INTO audit_log(user_id, action) VALUES (NEW.id, 'USER_CREATED');\nEND;",
+      "testCases": [
+        {
+          "name": "Insert user triggers audit log",
+          "userSQL": "INSERT INTO users VALUES (1, 'Alice');",
+          "expectedRows": [{ "user_id": 1, "action": "USER_CREATED" }],
+          "ordered": true,
+          "checkType": "final_table",
+          "table": "audit_log"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Prevent Salary Decrease Using Trigger",
+      "slug": "trigger-prevent-salary-decrease",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Triggers",
+      "tags": ["BEFORE UPDATE"],
+      "description": "Create a BEFORE UPDATE trigger that blocks decreasing an employee's salary.",
+      "hints": ["Compare NEW.salary and OLD.salary."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES(1,'Alice',50000);",
+      "solutionSQL": "CREATE TRIGGER prevent_salary_decrease\nBEFORE UPDATE ON employees\nFOR EACH ROW\nWHEN NEW.salary < OLD.salary\nBEGIN\n  SELECT RAISE(ABORT, 'Cannot decrease salary');\nEND;",
+      "testCases": [
+        {
+          "name": "Valid raise",
+          "userSQL": "UPDATE employees SET salary = 55000 WHERE id = 1;",
+          "expectedRows": [{ "id": 1, "name": "Alice", "salary": 55000 }],
+          "ordered": true,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Invalid decrease",
+          "userSQL": "UPDATE employees SET salary = 40000 WHERE id = 1;",
+          "expectedError": "Cannot decrease salary",
+          "checkType": "error"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Maintain Total Price After Update",
+      "slug": "trigger-maintain-total-price",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Triggers",
+      "tags": ["AFTER UPDATE"],
+      "description": "Maintain total_price automatically whenever quantity or unit_price updates.",
+      "hints": ["Use NEW.quantity * NEW.unit_price."],
+      "setupSQL": "CREATE TABLE order_items(id INTEGER PRIMARY KEY, quantity INTEGER, unit_price INTEGER, total_price INTEGER);\nINSERT INTO order_items VALUES(1,2,50,100);",
+      "solutionSQL": "CREATE TRIGGER sync_total_price\nAFTER UPDATE ON order_items\nFOR EACH ROW\nBEGIN\n  UPDATE order_items\n  SET total_price = NEW.quantity * NEW.unit_price\n  WHERE id = NEW.id;\nEND;",
+      "testCases": [
+        {
+          "name": "Update qty updates total_price",
+          "userSQL": "UPDATE order_items SET quantity = 3 WHERE id = 1;",
+          "expectedRows": [
+            { "id": 1, "quantity": 3, "unit_price": 50, "total_price": 150 }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Prevent Deleting Admin Users",
+      "slug": "trigger-prevent-admin-delete",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Triggers",
+      "tags": ["BEFORE DELETE"],
+      "description": "Block DELETE on users where role='admin'.",
+      "hints": ["Use WHEN OLD.role = 'admin'.", "Raise an error."],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, name TEXT, role TEXT);\nINSERT INTO users VALUES(1,'Alice','admin'),(2,'Bob','user');",
+      "solutionSQL": "CREATE TRIGGER prevent_admin_delete\nBEFORE DELETE ON users\nFOR EACH ROW\nWHEN OLD.role = 'admin'\nBEGIN\n  SELECT RAISE(ABORT, 'Admin accounts cannot be deleted');\nEND;",
+      "testCases": [
+        {
+          "name": "Deleting user works",
+          "userSQL": "DELETE FROM users WHERE id = 2;",
+          "expectedRows": [{ "id": 1, "name": "Alice", "role": "admin" }],
+          "ordered": false,
+          "checkType": "final_table"
+        },
+        {
+          "name": "Deleting admin fails",
+          "userSQL": "DELETE FROM users WHERE id = 1;",
+          "expectedError": "Admin accounts cannot be deleted",
+          "checkType": "error"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Archive Deleted Orders",
+      "slug": "trigger-archive-deleted-orders",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Triggers",
+      "tags": ["AFTER DELETE", "ARCHIVE"],
+      "description": "Whenever an order is deleted, insert its data into orders_archive table.",
+      "hints": ["Use OLD.* in AFTER DELETE trigger."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, amount INTEGER);\nCREATE TABLE orders_archive(id INTEGER, amount INTEGER);",
+      "solutionSQL": "CREATE TRIGGER archive_orders\nAFTER DELETE ON orders\nFOR EACH ROW\nBEGIN\n  INSERT INTO orders_archive VALUES (OLD.id, OLD.amount);\nEND;",
+      "testCases": [
+        {
+          "name": "Delete order → archive entry created",
+          "userSQL": "INSERT INTO orders VALUES(1,300); DELETE FROM orders WHERE id=1;",
+          "expectedRows": [{ "id": 1, "amount": 300 }],
+          "ordered": true,
+          "checkType": "final_table",
+          "table": "orders_archive"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "CTE": [
+    {
+      "title": "Use CTE to Get Top 3 Highest Paid Employees",
+      "slug": "cte-top-3-salaries",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "CTE",
+      "tags": ["CTE", "WITH"],
+      "description": "Use a CTE to list the top 3 highest-paid employees.",
+      "hints": ["Use WITH before SELECT.", "ORDER BY salary DESC LIMIT 3."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1,'Alice',90000),(2,'Bob',70000),(3,'Charlie',80000),(4,'David',95000);",
+      "solutionSQL": "WITH top_salaries AS (\n  SELECT * FROM employees ORDER BY salary DESC LIMIT 3\n)\nSELECT * FROM top_salaries;",
+      "testCases": [
+        {
+          "name": "Top 3 salaries",
+          "expectedRows": [
+            { "id": 4, "name": "David", "salary": 95000 },
+            { "id": 1, "name": "Alice", "salary": 90000 },
+            { "id": 3, "name": "Charlie", "salary": 80000 }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Find Manager Chain Using Recursive CTE",
+      "slug": "recursive-employee-manager-chain",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "CTE",
+      "tags": ["RECURSIVE", "HIERARCHY"],
+      "description": "Return the full manager chain for employee_id=4.",
+      "hints": ["Start with the employee.", "Join upward using manager_id."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, manager_id INTEGER);\nINSERT INTO employees VALUES\n(1,'CEO',NULL),\n(2,'Director',1),\n(3,'Manager',2),\n(4,'Developer',3);",
+      "solutionSQL": "WITH RECURSIVE chain AS (\n  SELECT id, name, manager_id FROM employees WHERE id = 4\n  UNION ALL\n  SELECT e.id, e.name, e.manager_id FROM employees e\n  JOIN chain c ON e.id = c.manager_id\n)\nSELECT * FROM chain;",
+      "testCases": [
+        {
+          "name": "Manager chain of Developer",
+          "expectedRows": [
+            { "id": 4, "name": "Developer", "manager_id": 3 },
+            { "id": 3, "name": "Manager", "manager_id": 2 },
+            { "id": 2, "name": "Director", "manager_id": 1 },
+            { "id": 1, "name": "CEO", "manager_id": null }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Find All Subordinates of a Manager",
+      "slug": "recursive-find-subordinates",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "CTE",
+      "tags": ["RECURSIVE", "HIERARCHY"],
+      "description": "Return all subordinate employees (direct + indirect) under manager_id=2.",
+      "hints": ["Start at manager 2.", "Recursively join downward."],
+      "setupSQL": "CREATE TABLE emp(id INTEGER PRIMARY KEY, name TEXT, manager_id INTEGER);\nINSERT INTO emp VALUES\n(1,'CEO',NULL),(2,'Director',1),(3,'Lead',2),(4,'Dev',3),(5,'Intern',4);",
+      "solutionSQL": "WITH RECURSIVE sub AS (\n  SELECT * FROM emp WHERE manager_id = 2\n  UNION ALL\n  SELECT e.* FROM emp e JOIN sub s ON e.manager_id = s.id\n)\nSELECT * FROM sub;",
+      "testCases": [
+        {
+          "name": "Subordinates under Director",
+          "expectedRows": [
+            { "id": 3, "name": "Lead", "manager_id": 2 },
+            { "id": 4, "name": "Dev", "manager_id": 3 },
+            { "id": 5, "name": "Intern", "manager_id": 4 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Find All Subordinates of a Manager",
+      "slug": "recursive-find-subordinates",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "CTE",
+      "tags": ["RECURSIVE", "HIERARCHY"],
+      "description": "Return all subordinate employees (direct + indirect) under manager_id=2.",
+      "hints": ["Start at manager 2.", "Recursively join downward."],
+      "setupSQL": "CREATE TABLE emp(id INTEGER PRIMARY KEY, name TEXT, manager_id INTEGER);\nINSERT INTO emp VALUES\n(1,'CEO',NULL),(2,'Director',1),(3,'Lead',2),(4,'Dev',3),(5,'Intern',4);",
+      "solutionSQL": "WITH RECURSIVE sub AS (\n  SELECT * FROM emp WHERE manager_id = 2\n  UNION ALL\n  SELECT e.* FROM emp e JOIN sub s ON e.manager_id = s.id\n)\nSELECT * FROM sub;",
+      "testCases": [
+        {
+          "name": "Subordinates under Director",
+          "expectedRows": [
+            { "id": 3, "name": "Lead", "manager_id": 2 },
+            { "id": 4, "name": "Dev", "manager_id": 3 },
+            { "id": 5, "name": "Intern", "manager_id": 4 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Compute Total Salary of a Manager's Entire Team",
+      "slug": "recursive-salary-sum",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "CTE",
+      "tags": ["RECURSIVE", "SUM", "HIERARCHY"],
+      "description": "Return total salary of all subordinates under employee 2.",
+      "hints": ["Recurse through subordinates, then SUM salary."],
+      "setupSQL": "CREATE TABLE emp(id INTEGER PRIMARY KEY, name TEXT, manager_id INTEGER, salary INTEGER);\nINSERT INTO emp VALUES\n(1,'CEO',NULL,150000),(2,'Director',1,100000),(3,'Lead',2,80000),(4,'Dev',3,60000),(5,'Intern',4,30000);",
+      "solutionSQL": "WITH RECURSIVE sub AS (\n  SELECT * FROM emp WHERE manager_id = 2\n  UNION ALL\n  SELECT e.* FROM emp e JOIN sub s ON e.manager_id = s.id\n)\nSELECT SUM(salary) AS total_team_salary FROM sub;",
+      "testCases": [
+        {
+          "name": "Team salary under Director",
+          "expectedRows": [{ "total_team_salary": 170000 }],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Generate Numbers 1 to 10 Using Recursive CTE",
+      "slug": "recursive-generate-numbers",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "CTE",
+      "tags": ["RECURSIVE", "SEQUENCE"],
+      "description": "Generate numbers 1 to 10 using a recursive CTE.",
+      "hints": ["Start at 1, recurse until 10."],
+      "setupSQL": "",
+      "solutionSQL": "WITH RECURSIVE nums(n) AS (\n  SELECT 1\n  UNION ALL\n  SELECT n+1 FROM nums WHERE n < 10\n)\nSELECT * FROM nums;",
+      "testCases": [
+        {
+          "name": "Numbers 1–10",
+          "expectedRows": [
+            { "n": 1 },
+            { "n": 2 },
+            { "n": 3 },
+            { "n": 4 },
+            { "n": 5 },
+            { "n": 6 },
+            { "n": 7 },
+            { "n": 8 },
+            { "n": 9 },
+            { "n": 10 }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Detect Cycles in Employee Manager Graph",
+      "slug": "recursive-detect-cycles",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "CTE",
+      "tags": ["RECURSIVE", "CYCLE DETECTION"],
+      "description": "Detect if any employee indirectly manages themselves (cycle).",
+      "hints": ["Track path string.", "Check if NEW id is already in path."],
+      "setupSQL": "CREATE TABLE emp(id INTEGER PRIMARY KEY, manager_id INTEGER);\nINSERT INTO emp VALUES\n(1,2),(2,3),(3,1);",
+      "solutionSQL": "WITH RECURSIVE r(id, manager_id, path) AS (\n  SELECT id, manager_id, CAST(id AS TEXT) FROM emp\n  UNION ALL\n  SELECT e.id, e.manager_id, r.path || ',' || e.id\n  FROM emp e JOIN r ON e.id = r.manager_id\n  WHERE instr(r.path, e.id) = 0\n)\nSELECT * FROM r WHERE id != manager_id;",
+      "testCases": [
+        {
+          "name": "Cycle exists (1->2->3->1)",
+          "expectedRowsCount": 3,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "Stored Procedures": [
+    {
+      "title": "Stored Procedure to Update Employee Salary",
+      "slug": "sp-update-salary",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Stored Procedures",
+      "tags": ["PROCEDURE", "UPDATE"],
+      "description": "Create a procedure update_salary(emp_id, new_salary) that updates the employee's salary.",
+      "hints": ["Use UPDATE employees SET salary=new_salary WHERE id=emp_id."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INT);\nINSERT INTO employees VALUES(1,'Alice',50000);",
+      "solutionSQL": "CREATE PROCEDURE update_salary(IN emp INT, IN sal INT)\nBEGIN\n  UPDATE employees SET salary = sal WHERE id = emp;\nEND;",
+      "testCases": [
+        {
+          "name": "Update salary",
+          "userSQL": "CALL update_salary(1, 55000);",
+          "expectedRows": [{ "id": 1, "name": "Alice", "salary": 55000 }],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Procedure to Transfer Money Between Accounts",
+      "slug": "sp-transfer-funds",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Stored Procedures",
+      "tags": ["PROCEDURE", "TRANSACTION"],
+      "description": "Create a procedure transfer(from_id, to_id, amount) that moves money between accounts safely.",
+      "hints": [
+        "Use START TRANSACTION.",
+        "Subtract from source, add to target."
+      ],
+      "setupSQL": "CREATE TABLE accounts(id INT PRIMARY KEY, balance INT);\nINSERT INTO accounts VALUES (1,500),(2,1000);",
+      "solutionSQL": "CREATE PROCEDURE transfer(IN src INT, IN dest INT, IN amt INT)\nBEGIN\n  START TRANSACTION;\n  UPDATE accounts SET balance = balance - amt WHERE id = src;\n  UPDATE accounts SET balance = balance + amt WHERE id = dest;\n  COMMIT;\nEND;",
+      "testCases": [
+        {
+          "name": "Transfer 200 from 1 to 2",
+          "userSQL": "CALL transfer(1,2,200);",
+          "expectedRows": [
+            { "id": 1, "balance": 300 },
+            { "id": 2, "balance": 1200 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "Transactions": [
+    {
+      "title": "Multi-Step Order Creation — Rollback on Item Failure",
+      "slug": "txn-multi-step-order",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Transactions",
+      "tags": ["TRANSACTION", "ROLLBACK"],
+      "description": "Create an order record, then 2 items. If inserting the second item fails, rollback the whole order.",
+      "hints": ["BEGIN; insert order; insert items; commit."],
+      "setupSQL": "CREATE TABLE orders(id INT PRIMARY KEY, customer_id INT);\nCREATE TABLE order_items(id INT PRIMARY KEY, order_id INT, qty INT);\nINSERT INTO order_items VALUES(1,999,10);",
+      "solutionSQL": "BEGIN;\nINSERT INTO orders VALUES(1, 50);\nINSERT INTO order_items VALUES(2, 1, 3);\nINSERT INTO order_items VALUES(1, 1, 5); -- PK clash aborts\nCOMMIT;",
+      "testCases": [
+        {
+          "name": "Trigger error on duplicate PK",
+          "expectedError": "UNIQUE constraint failed",
+          "checkType": "error"
+        },
+        {
+          "name": "Rollback — no order should exist",
+          "expectedRows": [],
+          "ordered": true,
+          "checkType": "final_table",
+          "table": "orders"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Rollback Transaction on Insufficient Funds",
+      "slug": "txn-rollback-overdraft",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Transactions",
+      "tags": ["ROLLBACK", "BEGIN", "ERROR"],
+      "description": "Transfer 800 from account 1 (balance 500). Detect overdraft and rollback the entire transaction.",
+      "hints": ["Check balance first.", "If insufficient, ROLLBACK."],
+      "setupSQL": "CREATE TABLE accounts(id INTEGER PRIMARY KEY, balance INT);\nINSERT INTO accounts VALUES(1,500),(2,1000);",
+      "solutionSQL": "BEGIN;\nSELECT CASE WHEN balance < 800 THEN RAISE(ABORT, 'Insufficient funds') END FROM accounts WHERE id = 1;\nUPDATE accounts SET balance = balance - 800 WHERE id = 1;\nUPDATE accounts SET balance = balance + 800 WHERE id = 2;\nCOMMIT;",
+      "testCases": [
+        {
+          "name": "Rollback occurs due to insufficient funds",
+          "expectedError": "Insufficient funds",
+          "checkType": "error"
+        },
+        {
+          "name": "Balances unchanged after rollback",
+          "expectedRows": [
+            { "id": 1, "balance": 500 },
+            { "id": 2, "balance": 1000 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Use SAVEPOINT to Roll Back Only Part of a Transaction",
+      "slug": "txn-savepoint-rollback",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Transactions",
+      "tags": ["SAVEPOINT", "ROLLBACK TO", "PARTIAL ROLLBACK"],
+      "description": "Insert 3 orders. Roll back the second one using SAVEPOINT but keep the others.",
+      "hints": ["Use SAVEPOINT sp1 and ROLLBACK TO sp1."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, amount INT);",
+      "solutionSQL": "BEGIN;\nINSERT INTO orders VALUES(1, 100);\nSAVEPOINT sp1;\nINSERT INTO orders VALUES(2, 200);\nROLLBACK TO sp1;\nINSERT INTO orders VALUES(3, 300);\nCOMMIT;",
+      "testCases": [
+        {
+          "name": "Only order 1 and 3 exist",
+          "expectedRows": [
+            { "id": 1, "amount": 100 },
+            { "id": 3, "amount": 300 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Atomic Stock Update When Processing an Order",
+      "slug": "txn-atomic-stock-update",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Transactions",
+      "tags": ["TRANSACTION", "ACID"],
+      "description": "Reduce stock only if enough stock exists. Otherwise roll back.",
+      "hints": ["Check stock first; rollback on insufficient stock."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, stock INT);\nINSERT INTO products VALUES(1,10);",
+      "solutionSQL": "BEGIN;\nSELECT CASE WHEN stock < 5 THEN RAISE(ABORT,'Not enough stock') END FROM products WHERE id=1;\nUPDATE products SET stock = stock - 5 WHERE id=1;\nCOMMIT;",
+      "testCases": [
+        {
+          "name": "Successful stock decrease",
+          "userSQL": "BEGIN; UPDATE products SET stock = stock - 5 WHERE id = 1; COMMIT;",
+          "expectedRows": [{ "id": 1, "stock": 5 }],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "Security": [
+    {
+      "title": "Grant SELECT Privilege on Employees Table",
+      "slug": "grant-select-employees",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Security",
+      "tags": ["GRANT", "SELECT", "PRIVILEGES"],
+      "description": "Write a GRANT statement that gives user 'app_user' permission to SELECT from the employees table.",
+      "hints": ["Use GRANT SELECT ON employees TO 'app_user';"],
+      "setupSQL": "CREATE TABLE employees(id INT, name TEXT);",
+      "solutionSQL": "GRANT SELECT ON employees TO 'app_user';",
+      "testCases": [
+        {
+          "name": "Verify grant statement string",
+          "expectedRows": [
+            { "statement": "GRANT SELECT ON employees TO 'app_user';" }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Grant INSERT and UPDATE on Orders",
+      "slug": "grant-insert-update-orders",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Security",
+      "tags": ["GRANT", "INSERT", "UPDATE"],
+      "description": "Grant INSERT and UPDATE privileges on the orders table to user 'order_clerk'.",
+      "hints": ["Use GRANT INSERT, UPDATE ON orders TO 'order_clerk';"],
+      "setupSQL": "CREATE TABLE orders(id INT, amount INT);",
+      "solutionSQL": "GRANT INSERT, UPDATE ON orders TO 'order_clerk';",
+      "testCases": [
+        {
+          "name": "Privilege grant string check",
+          "expectedRows": [
+            { "statement": "GRANT INSERT, UPDATE ON orders TO 'order_clerk';" }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Revoke DELETE Privilege From User",
+      "slug": "revoke-delete",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Security",
+      "tags": ["REVOKE", "DELETE"],
+      "description": "Revoke DELETE permission on products from user 'editor'.",
+      "hints": ["Use REVOKE DELETE ON products FROM 'editor';"],
+      "setupSQL": "CREATE TABLE products(id INT, name TEXT);",
+      "solutionSQL": "REVOKE DELETE ON products FROM 'editor';",
+      "testCases": [
+        {
+          "name": "Revoke delete privilege",
+          "expectedRows": [
+            { "statement": "REVOKE DELETE ON products FROM 'editor';" }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Create Data Entry Role With Limited Privileges",
+      "slug": "role-data-entry",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Security",
+      "tags": ["ROLE", "INSERT", "SELECT"],
+      "description": "Create a role data_entry with INSERT and SELECT on orders.",
+      "hints": ["Use CREATE ROLE and GRANT INSERT, SELECT."],
+      "setupSQL": "",
+      "solutionSQL": "CREATE ROLE data_entry;\nGRANT INSERT, SELECT ON orders TO data_entry;",
+      "testCases": [
+        {
+          "name": "Role definition check",
+          "expectedRows": [
+            { "statement": "CREATE ROLE data_entry;" },
+            { "statement": "GRANT INSERT, SELECT ON orders TO data_entry;" }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "Views": [
+    {
+      "title": "Create a View Showing Only Active Users",
+      "slug": "view-active-users",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Views",
+      "tags": ["CREATE VIEW", "FILTER"],
+      "description": "Create a view active_users that shows only rows where status = 'active'.",
+      "hints": [
+        "Use CREATE VIEW active_users AS SELECT ... WHERE status='active'. "
+      ],
+      "setupSQL": "CREATE TABLE users(id INT, name TEXT, status TEXT);\nINSERT INTO users VALUES (1,'Alice','active'),(2,'Bob','inactive'),(3,'Carol','active');",
+      "solutionSQL": "CREATE VIEW active_users AS SELECT * FROM users WHERE status = 'active';",
+      "testCases": [
+        {
+          "name": "View output shows only active users",
+          "userSQL": "SELECT * FROM active_users;",
+          "expectedRows": [
+            { "id": 1, "name": "Alice", "status": "active" },
+            { "id": 3, "name": "Carol", "status": "active" }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Create View for Total Order Amount Per User",
+      "slug": "view-user-total-spend",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Views",
+      "tags": ["AGGREGATION", "VIEW"],
+      "description": "Create a view total_spend that shows each user and their summed order amounts.",
+      "hints": ["Use GROUP BY user_id."],
+      "setupSQL": "CREATE TABLE orders(id INT, user_id INT, amount INT);\nINSERT INTO orders VALUES(1,1,200),(2,1,300),(3,2,150);",
+      "solutionSQL": "CREATE VIEW total_spend AS\nSELECT user_id, SUM(amount) AS total_amount FROM orders GROUP BY user_id;",
+      "testCases": [
+        {
+          "name": "Aggregated view is correct",
+          "userSQL": "SELECT * FROM total_spend ORDER BY user_id;",
+          "expectedRows": [
+            { "user_id": 1, "total_amount": 500 },
+            { "user_id": 2, "total_amount": 150 }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Update Data Through a Simple Updateable View",
+      "slug": "view-update-through",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Views",
+      "tags": ["UPDATE VIEW", "UPDATEABLE"],
+      "description": "Create a view basic_users(id, name). Update the name through the view.",
+      "hints": [
+        "Simple 1-table views are updateable.",
+        "UPDATE the view directly."
+      ],
+      "setupSQL": "CREATE TABLE users(id INT, name TEXT);\nINSERT INTO users VALUES(1,'Alice');",
+      "solutionSQL": "CREATE VIEW basic_users AS SELECT id, name FROM users;",
+      "testCases": [
+        {
+          "name": "Update via view",
+          "userSQL": "UPDATE basic_users SET name='Alicia' WHERE id=1;",
+          "expectedRows": [{ "id": 1, "name": "Alicia" }],
+          "ordered": true,
+          "checkType": "final_table",
+          "table": "users"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Drop an Existing View",
+      "slug": "drop-view-example",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Views",
+      "tags": ["DROP VIEW"],
+      "description": "Write a statement to drop the view public_employees.",
+      "hints": ["Use DROP VIEW public_employees;"],
+      "setupSQL": "",
+      "solutionSQL": "DROP VIEW public_employees;",
+      "testCases": [
+        {
+          "name": "Drop view statement",
+          "expectedRows": [{ "statement": "DROP VIEW public_employees;" }],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "Performance": [
+    {
+      "title": "Create Index to Improve Email Lookup Performance",
+      "slug": "perf-index-email-lookup",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Performance",
+      "tags": ["INDEX", "FULL TABLE SCAN"],
+      "description": "Create an index on the email column to avoid a full table scan when filtering users by email.",
+      "hints": ["Use CREATE INDEX idx_users_email ON users(email)."],
+      "setupSQL": "CREATE TABLE users(id INT PRIMARY KEY, email TEXT, name TEXT);\nINSERT INTO users VALUES(1,'a@test.com','Alice'),(2,'b@test.com','Bob');",
+      "solutionSQL": "CREATE INDEX idx_users_email ON users(email);",
+      "testCases": [
+        {
+          "name": "Index statement check",
+          "expectedRows": [
+            { "statement": "CREATE INDEX idx_users_email ON users(email);" }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Create a Covering Index to Optimize SELECT Query",
+      "slug": "perf-covering-index",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Performance",
+      "tags": ["COVERING INDEX", "INDEX"],
+      "description": "Optimize the query SELECT name, age FROM users WHERE age > 30 by creating a covering index.",
+      "hints": ["Use CREATE INDEX idx_users_age_name ON users(age, name)."],
+      "setupSQL": "CREATE TABLE users(id INT PRIMARY KEY, name TEXT, age INT);\nINSERT INTO users VALUES(1,'A',25),(2,'B',40),(3,'C',35);",
+      "solutionSQL": "CREATE INDEX idx_users_age_name ON users(age, name);",
+      "testCases": [
+        {
+          "name": "Covering index definition",
+          "expectedRows": [
+            {
+              "statement": "CREATE INDEX idx_users_age_name ON users(age, name);"
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Rewrite Query to Avoid Function on Indexed Column",
+      "slug": "perf-avoid-functions-on-index",
+      "difficulty": "Hard",
+      "mode": "write",
+      "category": "Performance",
+      "tags": ["DATE", "FILTER", "INDEX"],
+      "description": "Optimize the query WHERE DATE(created_at) = '2024-01-01'. Rewrite it to avoid applying functions on indexed columns.",
+      "hints": [
+        "Use created_at >= '2024-01-01' AND created_at < '2024-01-02'."
+      ],
+      "setupSQL": "CREATE TABLE logs(id INT, created_at TEXT, msg TEXT);\nINSERT INTO logs VALUES(1,'2024-01-01 10:00','X'),(2,'2024-01-02 09:00','Y');",
+      "solutionSQL": "SELECT * FROM logs WHERE created_at >= '2024-01-01' AND created_at < '2024-01-02';",
+      "testCases": [
+        {
+          "name": "Correct logs returned",
+          "userSQL": "SELECT * FROM logs WHERE created_at >= '2024-01-01' AND created_at < '2024-01-02';",
+          "expectedRows": [
+            { "id": 1, "created_at": "2024-01-01 10:00", "msg": "X" }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ],
+  "Case Study": [
+    {
+      "title": "Find Top 3 Best-Selling Products by Revenue",
+      "slug": "case-ecom-top-3-products",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Case Study",
+      "tags": ["JOIN", "AGGREGATION", "ORDER BY", "LIMIT"],
+      "description": "You are working for an e-commerce company. Each order has multiple items. Find the top 3 products by total revenue (quantity * unit_price) across all orders.",
+      "hints": [
+        "Join order_items with products to get product names.",
+        "Compute revenue as quantity * unit_price.",
+        "GROUP BY product_id and ORDER BY total_revenue DESC LIMIT 3."
+      ],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT);\nCREATE TABLE order_items(id INTEGER PRIMARY KEY, order_id INTEGER, product_id INTEGER, quantity INTEGER, unit_price INTEGER);\nINSERT INTO products VALUES (1,'Laptop'),(2,'Mouse'),(3,'Keyboard'),(4,'Monitor');\nINSERT INTO orders VALUES (100, 10, '2024-01-01'), (101, 11, '2024-01-02');\nINSERT INTO order_items VALUES\n(1,100,1,1,1000),\n(2,100,2,2,25),\n(3,100,3,1,50),\n(4,101,1,1,900),\n(5,101,4,2,200);",
+      "solutionSQL": "SELECT p.id AS product_id, p.name, SUM(oi.quantity * oi.unit_price) AS total_revenue\nFROM order_items oi\nJOIN products p ON oi.product_id = p.id\nGROUP BY p.id, p.name\nORDER BY total_revenue DESC\nLIMIT 3;",
+      "testCases": [
+        {
+          "name": "Top 3 products by revenue",
+          "expectedRows": [
+            { "product_id": 1, "name": "Laptop", "total_revenue": 1900 },
+            { "product_id": 4, "name": "Monitor", "total_revenue": 400 },
+            { "product_id": 2, "name": "Mouse", "total_revenue": 50 }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Calculate Average Trip Duration per Driver",
+      "slug": "case-rideshare-avg-duration",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Case Study",
+      "tags": ["DATETIME", "AGGREGATION", "GROUP BY"],
+      "description": "You work for a ride-sharing company. Each trip has a start_time and end_time. For each driver, calculate their average trip duration in minutes.",
+      "hints": [
+        "Use (julianday(end_time) - julianday(start_time)) * 24 * 60 to get minutes in SQLite.",
+        "GROUP BY driver_id."
+      ],
+      "setupSQL": "CREATE TABLE drivers(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE trips(id INTEGER PRIMARY KEY, driver_id INTEGER, start_time TEXT, end_time TEXT);\nINSERT INTO drivers VALUES (1,'Alice'),(2,'Bob');\nINSERT INTO trips VALUES\n(1,1,'2024-01-01 10:00','2024-01-01 10:30'),\n(2,1,'2024-01-01 11:00','2024-01-01 11:45'),\n(3,2,'2024-01-01 09:00','2024-01-01 09:20');",
+      "solutionSQL": "SELECT d.id AS driver_id, d.name,\n  AVG((julianday(t.end_time) - julianday(t.start_time)) * 24 * 60) AS avg_duration_minutes\nFROM trips t\nJOIN drivers d ON t.driver_id = d.id\nGROUP BY d.id, d.name;",
+      "testCases": [
+        {
+          "name": "Average duration per driver",
+          "expectedRows": [
+            { "driver_id": 1, "name": "Alice", "avg_duration_minutes": 37.5 },
+            { "driver_id": 2, "name": "Bob", "avg_duration_minutes": 20.0 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Find Daily Active Users (DAU)",
+      "slug": "case-streaming-dau",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Case Study",
+      "tags": ["DISTINCT", "GROUP BY", "DATE"],
+      "description": "You work for a video streaming platform. Each row in streams table represents a play event. For each day, find the number of distinct users who watched at least one video (Daily Active Users).",
+      "hints": [
+        "Extract the date part from watched_at if needed.",
+        "Use COUNT(DISTINCT user_id) grouped by date."
+      ],
+      "setupSQL": "CREATE TABLE streams(id INTEGER PRIMARY KEY, user_id INTEGER, video_id INTEGER, watched_at TEXT);\nINSERT INTO streams VALUES\n(1,1,10,'2024-01-01 10:00'),\n(2,1,11,'2024-01-01 12:00'),\n(3,2,10,'2024-01-01 13:00'),\n(4,3,12,'2024-01-02 09:00');",
+      "solutionSQL": "SELECT substr(watched_at,1,10) AS day,\n       COUNT(DISTINCT user_id) AS dau\nFROM streams\nGROUP BY day\nORDER BY day;",
+      "testCases": [
+        {
+          "name": "DAU per day",
+          "expectedRows": [
+            { "day": "2024-01-01", "dau": 2 },
+            { "day": "2024-01-02", "dau": 1 }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Find Suspicious Large Transfers",
+      "slug": "case-banking-suspicious-transfers",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Case Study",
+      "tags": ["FILTER", "JOIN", "ORDER BY"],
+      "description": "A bank wants to flag large transfers above 5000 between accounts. List all transfers over 5000, including sender and receiver names.",
+      "hints": [
+        "Use two joins to accounts: one for sender, one for receiver.",
+        "Filter WHERE amount > 5000."
+      ],
+      "setupSQL": "CREATE TABLE accounts(id INTEGER PRIMARY KEY, owner_name TEXT);\nCREATE TABLE transfers(id INTEGER PRIMARY KEY, from_account INTEGER, to_account INTEGER, amount INTEGER, created_at TEXT);\nINSERT INTO accounts VALUES (1,'Alice'),(2,'Bob'),(3,'Charlie');\nINSERT INTO transfers VALUES\n(1,1,2,2000,'2024-01-01'),\n(2,2,3,7000,'2024-01-02'),\n(3,1,3,9000,'2024-01-03');",
+      "solutionSQL": "SELECT t.id, t.amount, t.created_at,\n       a_from.owner_name AS from_name,\n       a_to.owner_name AS to_name\nFROM transfers t\nJOIN accounts a_from ON t.from_account = a_from.id\nJOIN accounts a_to   ON t.to_account   = a_to.id\nWHERE t.amount > 5000\nORDER BY t.amount DESC;",
+      "testCases": [
+        {
+          "name": "Large transfers with names",
+          "expectedRows": [
+            {
+              "id": 3,
+              "amount": 9000,
+              "created_at": "2024-01-03",
+              "from_name": "Alice",
+              "to_name": "Charlie"
+            },
+            {
+              "id": 2,
+              "amount": 7000,
+              "created_at": "2024-01-02",
+              "from_name": "Bob",
+              "to_name": "Charlie"
+            }
+          ],
+          "ordered": true,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Find Mutual Friends Between Two Users",
+      "slug": "case-social-mutual-friends",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Case Study",
+      "tags": ["SELF JOIN", "SET LOGIC"],
+      "description": "In a social app, friendships are stored in a table friendships(user_id, friend_id) as a directed edge (can appear twice for both directions). Find all mutual friends between user 1 and user 2.",
+      "hints": [
+        "Friends of user 1 intersect friends of user 2.",
+        "Use two copies of the friendships table and join on friend_id."
+      ],
+      "setupSQL": "CREATE TABLE friendships(user_id INTEGER, friend_id INTEGER);\nINSERT INTO friendships VALUES\n(1,3),(1,4),(1,5),\n(2,4),(2,5),(2,6);",
+      "solutionSQL": "SELECT f1.friend_id AS mutual_friend_id\nFROM friendships f1\nJOIN friendships f2\n  ON f1.friend_id = f2.friend_id\nWHERE f1.user_id = 1 AND f2.user_id = 2;",
+      "testCases": [
+        {
+          "name": "Mutual friends of user 1 and 2",
+          "expectedRows": [
+            { "mutual_friend_id": 4 },
+            { "mutual_friend_id": 5 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Find Employees Earning Above Department Average",
+      "slug": "case-hr-above-dept-average",
+      "difficulty": "Hard",
+      "mode": "read",
+      "category": "Case Study",
+      "tags": ["WINDOW", "COMPARISON"],
+      "description": "In an HR system, find all employees whose salary is strictly greater than the average salary of their department.",
+      "hints": [
+        "Use AVG(salary) OVER(PARTITION BY department_id) as dept_avg.",
+        "Filter WHERE salary > dept_avg."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER, salary INTEGER);\nINSERT INTO employees VALUES\n(1,'Alice',10,60000),\n(2,'Bob',10,50000),\n(3,'Carol',10,70000),\n(4,'David',20,80000),\n(5,'Eva',20,75000);",
+      "solutionSQL": "WITH with_avg AS (\n  SELECT id, name, department_id, salary,\n         AVG(salary) OVER(PARTITION BY department_id) AS dept_avg\n  FROM employees\n)\nSELECT id, name, department_id, salary\nFROM with_avg\nWHERE salary > dept_avg;",
+      "testCases": [
+        {
+          "name": "Employees above dept average",
+          "expectedRows": [
+            { "id": 1, "name": "Alice", "department_id": 10, "salary": 60000 },
+            { "id": 3, "name": "Carol", "department_id": 10, "salary": 70000 },
+            { "id": 4, "name": "David", "department_id": 20, "salary": 80000 }
+          ],
+          "ordered": false,
+          "checkType": "final_table"
+        }
+      ],
+      "points": 20
+    }
+  ]
+}

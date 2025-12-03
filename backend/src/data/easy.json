@@ -1,0 +1,1506 @@
+{
+  "Data Retrieval Queries": [
+    {
+      "title": "Retrieve All Records from Employees Table",
+      "slug": "retrieve-all-employees",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["SELECT", "BASIC"],
+      "description": "Write a SQL query to retrieve all records from the employees table.",
+      "hints": [
+        "Use SELECT * to return all rows.",
+        "Make sure you reference the correct table name."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice Johnson', 'HR', 60000),\n(2, 'Bob Smith', 'Engineering', 90000),\n(3, 'Catherine Lee', 'Finance', 75000),\n(4, 'David Kim', 'Engineering', 85000),\n(5, 'Emma Davis', 'Marketing', 65000),\n(6, 'Frank Moore', 'Finance', 72000),\n(7, 'Grace Hall', 'HR', 58000),\n(8, 'Henry Clark', 'Marketing', 63000);",
+      "solutionSQL": "SELECT * FROM employees;",
+      "testCases": [
+        {
+          "name": "Return all employees",
+          "expectedRows": [
+            {
+              "id": 1,
+              "name": "Alice Johnson",
+              "department": "HR",
+              "salary": 60000
+            },
+            {
+              "id": 2,
+              "name": "Bob Smith",
+              "department": "Engineering",
+              "salary": 90000
+            },
+            {
+              "id": 3,
+              "name": "Catherine Lee",
+              "department": "Finance",
+              "salary": 75000
+            },
+            {
+              "id": 4,
+              "name": "David Kim",
+              "department": "Engineering",
+              "salary": 85000
+            },
+            {
+              "id": 5,
+              "name": "Emma Davis",
+              "department": "Marketing",
+              "salary": 65000
+            },
+            {
+              "id": 6,
+              "name": "Frank Moore",
+              "department": "Finance",
+              "salary": 72000
+            },
+            {
+              "id": 7,
+              "name": "Grace Hall",
+              "department": "HR",
+              "salary": 58000
+            },
+            {
+              "id": 8,
+              "name": "Henry Clark",
+              "department": "Marketing",
+              "salary": 63000
+            }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Select Employee Names and Departments",
+      "slug": "select-names-departments",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["SELECT", "COLUMNS"],
+      "description": "Write a query to return each employee's name and department.",
+      "hints": [
+        "Select only name and department fields.",
+        "Do not use SELECT *."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice Johnson', 'HR'),\n(2, 'Bob Smith', 'Engineering'),\n(3, 'Catherine Lee', 'Finance'),\n(4, 'David Kim', 'Engineering');",
+      "solutionSQL": "SELECT name, department FROM employees;",
+      "testCases": [
+        {
+          "name": "Check name and department output",
+          "expectedRows": [
+            { "name": "Alice Johnson", "department": "HR" },
+            { "name": "Bob Smith", "department": "Engineering" },
+            { "name": "Catherine Lee", "department": "Finance" },
+            { "name": "David Kim", "department": "Engineering" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Retrieve Products with Price Greater Than 100",
+      "slug": "products-price-greater-100",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["SELECT", "WHERE"],
+      "description": "Write a query to fetch all products priced greater than 100.",
+      "hints": ["Use a WHERE condition.", "Compare the price column with 100."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop Bag', 80),\n(2, 'Keyboard', 120),\n(3, 'Monitor', 250),\n(4, 'USB Cable', 15),\n(5, 'Headphones', 180);",
+      "solutionSQL": "SELECT * FROM products WHERE price > 100;",
+      "testCases": [
+        {
+          "name": "Products priced above 100",
+          "expectedRows": [
+            { "id": 2, "name": "Keyboard", "price": 120 },
+            { "id": 3, "name": "Monitor", "price": 250 },
+            { "id": 5, "name": "Headphones", "price": 180 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Get All Orders Placed on 2024-01-10",
+      "slug": "orders-on-specific-date",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["DATES", "WHERE"],
+      "description": "Write a SQL query to return all orders placed on '2024-01-10'.",
+      "hints": ["Use a date filter in WHERE.", "Match the date exactly."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, order_date TEXT, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 101, '2024-01-10', 250),\n(2, 102, '2024-01-11', 120),\n(3, 103, '2024-01-10', 430),\n(4, 104, '2024-01-12', 90);",
+      "solutionSQL": "SELECT * FROM orders WHERE order_date = '2024-01-10';",
+      "testCases": [
+        {
+          "name": "Orders on 2024-01-10",
+          "expectedRows": [
+            {
+              "id": 1,
+              "customer_id": 101,
+              "order_date": "2024-01-10",
+              "amount": 250
+            },
+            {
+              "id": 3,
+              "customer_id": 103,
+              "order_date": "2024-01-10",
+              "amount": 430
+            }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Select All Customers Not from Canada",
+      "slug": "customers-not-canada",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["WHERE", "NOT"],
+      "description": "Write a SQL query to return all customers who are not from Canada.",
+      "hints": ["Use WHERE with NOT.", "Compare the country column."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, country TEXT);\nINSERT INTO customers VALUES\n(1, 'John Doe', 'Canada'),\n(2, 'Emily Stone', 'USA'),\n(3, 'Mark Paul', 'Germany'),\n(4, 'Priya Nair', 'India');",
+      "solutionSQL": "SELECT * FROM customers WHERE country != 'Canada';",
+      "testCases": [
+        {
+          "name": "Customers not from Canada",
+          "expectedRows": [
+            { "id": 2, "name": "Emily Stone", "country": "USA" },
+            { "id": 3, "name": "Mark Paul", "country": "Germany" },
+            { "id": 4, "name": "Priya Nair", "country": "India" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Retrieve Employees Hired After 2022",
+      "slug": "employees-hired-after-2022",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["WHERE", "DATES"],
+      "description": "Write a query to fetch employees hired after the year 2022.",
+      "hints": ["Use a date comparison.", "Check hire_date column."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, hire_date TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', '2021-05-10'),\n(2, 'Bob', '2023-03-14'),\n(3, 'Catherine', '2024-01-22'),\n(4, 'David', '2022-12-31');",
+      "solutionSQL": "SELECT * FROM employees WHERE hire_date > '2022-12-31';",
+      "testCases": [
+        {
+          "name": "Employees hired after 2022",
+          "expectedRows": [
+            { "id": 2, "name": "Bob", "hire_date": "2023-03-14" },
+            { "id": 3, "name": "Catherine", "hire_date": "2024-01-22" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Fetch Items Containing 'SQL' in Name",
+      "slug": "items-contain-sql",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["LIKE", "PATTERN"],
+      "description": "Return all items whose name contains the substring 'SQL'.",
+      "hints": [
+        "Use LIKE with % wildcard.",
+        "Case sensitivity depends on database."
+      ],
+      "setupSQL": "CREATE TABLE items(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO items VALUES\n(1, 'SQL Basics'),\n(2, 'Advanced SQL Guide'),\n(3, 'NoSQL Overview'),\n(4, 'Java for Beginners');",
+      "solutionSQL": "SELECT * FROM items WHERE name LIKE '%SQL%';",
+      "testCases": [
+        {
+          "name": "Items containing SQL",
+          "expectedRows": [
+            { "id": 1, "name": "SQL Basics" },
+            { "id": 2, "name": "Advanced SQL Guide" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Retrieve In-Stock Products",
+      "slug": "products-in-stock",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["WHERE"],
+      "description": "Write a query to fetch all products that have more than 0 stock.",
+      "hints": ["Check the stock column.", "Use a comparison operator > 0."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, stock INTEGER);\nINSERT INTO products VALUES\n(1, 'Keyboard', 15),\n(2, 'Mouse', 0),\n(3, 'Monitor', 8),\n(4, 'USB Cable', 25);",
+      "solutionSQL": "SELECT * FROM products WHERE stock > 0;",
+      "testCases": [
+        {
+          "name": "Products with stock > 0",
+          "expectedRows": [
+            { "id": 1, "name": "Keyboard", "stock": 15 },
+            { "id": 3, "name": "Monitor", "stock": 8 },
+            { "id": 4, "name": "USB Cable", "stock": 25 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Select Employees from Engineering Department",
+      "slug": "employees-from-engineering",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["WHERE"],
+      "description": "Retrieve all employees who work in the Engineering department.",
+      "hints": ["Use a WHERE filter.", "Match department = 'Engineering'."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice Johnson', 'HR'),\n(2, 'Bob Smith', 'Engineering'),\n(3, 'Catherine Lee', 'Engineering'),\n(4, 'David Kim', 'Finance');",
+      "solutionSQL": "SELECT * FROM employees WHERE department = 'Engineering';",
+      "testCases": [
+        {
+          "name": "Engineering employees",
+          "expectedRows": [
+            { "id": 2, "name": "Bob Smith", "department": "Engineering" },
+            { "id": 3, "name": "Catherine Lee", "department": "Engineering" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Retrieve Customers Whose Name Starts With 'A'",
+      "slug": "customers-name-starts-a",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Data Retrieval Queries",
+      "tags": ["LIKE", "PATTERN"],
+      "description": "Write a query to return customers whose name starts with the letter 'A'.",
+      "hints": ["Use LIKE with 'A%'.", "Match only starting letter."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO customers VALUES\n(1, 'Alice'),\n(2, 'Amanda'),\n(3, 'Bob'),\n(4, 'Chris'),\n(5, 'Arjun');",
+      "solutionSQL": "SELECT * FROM customers WHERE name LIKE 'A%';",
+      "testCases": [
+        {
+          "name": "Names starting with A",
+          "expectedRows": [
+            { "id": 1, "name": "Alice" },
+            { "id": 2, "name": "Amanda" },
+            { "id": 5, "name": "Arjun" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    }
+  ],
+
+  "Filtering and Sorting Data": [
+    {
+      "title": "Get Unique Countries from Customers",
+      "slug": "distinct-customer-countries",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["DISTINCT", "SELECT"],
+      "description": "Write a SQL query to return all unique countries from the customers table.",
+      "hints": ["Use DISTINCT to eliminate duplicate country names."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, country TEXT);\nINSERT INTO customers VALUES\n(1, 'Alice', 'USA'),\n(2, 'Bob', 'Canada'),\n(3, 'Charlie', 'USA'),\n(4, 'David', 'Germany'),\n(5, 'Emma', 'Canada'),\n(6, 'Frank', 'India');",
+      "solutionSQL": "SELECT DISTINCT country FROM customers;",
+      "testCases": [
+        {
+          "name": "Unique countries",
+          "expectedRows": [
+            { "country": "USA" },
+            { "country": "Canada" },
+            { "country": "Germany" },
+            { "country": "India" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Top 5 Highest-Paid Employees",
+      "slug": "top-5-salaries",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["ORDER BY", "LIMIT"],
+      "description": "Write a SQL query to return the top 5 employees with the highest salary.",
+      "hints": [
+        "Sort by salary in descending order.",
+        "Use LIMIT to restrict results."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 60000),\n(2, 'Bob', 90000),\n(3, 'Charlie', 75000),\n(4, 'David', 85000),\n(5, 'Emma', 65000),\n(6, 'Frank', 72000),\n(7, 'Grace', 58000),\n(8, 'Henry', 95000);\n",
+      "solutionSQL": "SELECT * FROM employees ORDER BY salary DESC LIMIT 5;",
+      "testCases": [
+        {
+          "name": "Top 5 salaries",
+          "expectedRows": [
+            { "id": 8, "name": "Henry", "salary": 95000 },
+            { "id": 2, "name": "Bob", "salary": 90000 },
+            { "id": 4, "name": "David", "salary": 85000 },
+            { "id": 3, "name": "Charlie", "salary": 75000 },
+            { "id": 6, "name": "Frank", "salary": 72000 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Products Priced Between 50 and 200",
+      "slug": "products-between-50-200",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["BETWEEN", "WHERE"],
+      "description": "Write a query to fetch all products whose price is between 50 and 200.",
+      "hints": ["Use the BETWEEN keyword with inclusive bounds."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'USB Cable', 15),\n(2, 'Keyboard', 120),\n(3, 'Monitor', 250),\n(4, 'Mouse', 45),\n(5, 'Headphones', 180),\n(6, 'Laptop Stand', 75);",
+      "solutionSQL": "SELECT * FROM products WHERE price BETWEEN 50 AND 200;",
+      "testCases": [
+        {
+          "name": "Products priced between 50 and 200",
+          "expectedRows": [
+            { "id": 2, "name": "Keyboard", "price": 120 },
+            { "id": 5, "name": "Headphones", "price": 180 },
+            { "id": 6, "name": "Laptop Stand", "price": 75 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Retrieve Employees Aged 25 to 35",
+      "slug": "employees-age-25-35",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["BETWEEN", "WHERE"],
+      "description": "Write a query to select employees whose age is between 25 and 35.",
+      "hints": ["Age range filters commonly use BETWEEN."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, age INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 22),\n(2, 'Bob', 28),\n(3, 'Charlie', 35),\n(4, 'David', 41),\n(5, 'Emma', 31),\n(6, 'Frank', 26);",
+      "solutionSQL": "SELECT * FROM employees WHERE age BETWEEN 25 AND 35;",
+      "testCases": [
+        {
+          "name": "Employees age 25–35",
+          "expectedRows": [
+            { "id": 2, "name": "Bob", "age": 28 },
+            { "id": 3, "name": "Charlie", "age": 35 },
+            { "id": 5, "name": "Emma", "age": 31 },
+            { "id": 6, "name": "Frank", "age": 26 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Employees in Selected Departments",
+      "slug": "employees-dept-in-list",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["IN", "WHERE"],
+      "description": "Write a query to return employees working in either Engineering, HR, or Finance.",
+      "hints": ["Use the IN keyword for multiple matches."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'Engineering'),\n(2, 'Bob', 'Marketing'),\n(3, 'Charlie', 'Finance'),\n(4, 'David', 'HR'),\n(5, 'Emma', 'Sales');",
+      "solutionSQL": "SELECT * FROM employees WHERE department IN ('Engineering', 'HR', 'Finance');",
+      "testCases": [
+        {
+          "name": "Employees from allowed departments",
+          "expectedRows": [
+            { "id": 1, "name": "Alice", "department": "Engineering" },
+            { "id": 3, "name": "Charlie", "department": "Finance" },
+            { "id": 4, "name": "David", "department": "HR" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Sort Products by Price (Descending)",
+      "slug": "sort-products-price-desc",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["ORDER BY"],
+      "description": "Write a query to sort all products by price in descending order.",
+      "hints": ["Use ORDER BY price DESC."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'USB Cable', 15),\n(2, 'Keyboard', 120),\n(3, 'Monitor', 250),\n(4, 'Mouse', 45),\n(5, 'Headphones', 180);",
+      "solutionSQL": "SELECT * FROM products ORDER BY price DESC;",
+      "testCases": [
+        {
+          "name": "Products sorted desc by price",
+          "expectedRows": [
+            { "id": 3, "name": "Monitor", "price": 250 },
+            { "id": 5, "name": "Headphones", "price": 180 },
+            { "id": 2, "name": "Keyboard", "price": 120 },
+            { "id": 4, "name": "Mouse", "price": 45 },
+            { "id": 1, "name": "USB Cable", "price": 15 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Sort Employees Alphabetically by Name",
+      "slug": "sort-employees-by-name",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["ORDER BY"],
+      "description": "Write a query to return employees sorted alphabetically by their name.",
+      "hints": ["Sorting of text columns uses ORDER BY name ASC."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO employees VALUES\n(1, 'Catherine'),\n(2, 'Alice'),\n(3, 'David'),\n(4, 'Bob');",
+      "solutionSQL": "SELECT * FROM employees ORDER BY name ASC;",
+      "testCases": [
+        {
+          "name": "Names sorted alphabetically",
+          "expectedRows": [
+            { "id": 2, "name": "Alice" },
+            { "id": 4, "name": "Bob" },
+            { "id": 1, "name": "Catherine" },
+            { "id": 3, "name": "David" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Retrieve the 3 Cheapest Products",
+      "slug": "three-cheapest-products",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["ORDER BY", "LIMIT"],
+      "description": "Write a query to return the 3 products with the lowest price.",
+      "hints": ["Sort ascending and limit to 3 rows."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop', 900),\n(2, 'Mouse', 20),\n(3, 'Keyboard', 40),\n(4, 'USB Cable', 10),\n(5, 'Monitor', 200);",
+      "solutionSQL": "SELECT * FROM products ORDER BY price ASC LIMIT 3;",
+      "testCases": [
+        {
+          "name": "3 cheapest products",
+          "expectedRows": [
+            { "id": 4, "name": "USB Cable", "price": 10 },
+            { "id": 2, "name": "Mouse", "price": 20 },
+            { "id": 3, "name": "Keyboard", "price": 40 }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Customers Not Aged Between 30 and 50",
+      "slug": "customers-not-30-50",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["BETWEEN", "NOT"],
+      "description": "Write a query to return all customers who are NOT between ages 30 and 50.",
+      "hints": ["Use NOT BETWEEN for the negation."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, age INTEGER);\nINSERT INTO customers VALUES\n(1, 'Alice', 25),\n(2, 'Bob', 32),\n(3, 'Charlie', 51),\n(4, 'David', 29),\n(5, 'Emma', 48);",
+      "solutionSQL": "SELECT * FROM customers WHERE age NOT BETWEEN 30 AND 50;",
+      "testCases": [
+        {
+          "name": "Customers outside range",
+          "expectedRows": [
+            { "id": 1, "name": "Alice", "age": 25 },
+            { "id": 3, "name": "Charlie", "age": 51 },
+            { "id": 4, "name": "David", "age": 29 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Return Rows 6 to 8 from Employees Table",
+      "slug": "employees-offset-limit",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Filtering and Sorting Data",
+      "tags": ["LIMIT", "OFFSET"],
+      "description": "Write a query to skip the first 5 employee records and return the next 3.",
+      "hints": [
+        "Use LIMIT with OFFSET.",
+        "Order the results to ensure consistency."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO employees VALUES\n(1, 'A'), (2, 'B'), (3, 'C'), (4, 'D'), (5, 'E'), (6, 'F'), (7, 'G'), (8, 'H'), (9, 'I');",
+      "solutionSQL": "SELECT * FROM employees ORDER BY id LIMIT 3 OFFSET 5;",
+      "testCases": [
+        {
+          "name": "Rows 6-8 returned",
+          "expectedRows": [
+            { "id": 6, "name": "F" },
+            { "id": 7, "name": "G" },
+            { "id": 8, "name": "H" }
+          ],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    }
+  ],
+  "Aggregation and Summary Functions": [
+    {
+      "title": "Count Total Number of Employees",
+      "slug": "count-total-employees",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["COUNT"],
+      "description": "Write a SQL query to count the total number of employees.",
+      "hints": [
+        "Use COUNT(*) to count all rows.",
+        "COUNT(id) also works if id is never NULL."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR'),\n(2, 'Bob', 'Engineering'),\n(3, 'Charlie', 'Finance'),\n(4, 'David', 'Engineering'),\n(5, 'Emma', 'Marketing');",
+      "solutionSQL": "SELECT COUNT(*) AS total_employees FROM employees;",
+      "testCases": [
+        {
+          "name": "Count all employees",
+          "expectedRows": [{ "total_employees": 5 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Find Maximum Employee Salary",
+      "slug": "max-employee-salary",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["MAX"],
+      "description": "Write a SQL query to return the highest salary from the employees table.",
+      "hints": ["Use MAX(salary)."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 60000),\n(2, 'Bob', 80000),\n(3, 'Charlie', 75000),\n(4, 'David', 90000),\n(5, 'Emma', 65000);",
+      "solutionSQL": "SELECT MAX(salary) AS highest_salary FROM employees;",
+      "testCases": [
+        {
+          "name": "Find highest salary",
+          "expectedRows": [{ "highest_salary": 90000 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Find Minimum Product Price",
+      "slug": "min-product-price",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["MIN"],
+      "description": "Write a query to return the lowest product price.",
+      "hints": ["Use MIN(price)."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop', 900),\n(2, 'Keyboard', 40),\n(3, 'Mouse', 25),\n(4, 'USB Cable', 10),\n(5, 'Monitor', 250);",
+      "solutionSQL": "SELECT MIN(price) AS lowest_price FROM products;",
+      "testCases": [
+        {
+          "name": "Minimum price",
+          "expectedRows": [{ "lowest_price": 10 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Calculate Average Order Amount",
+      "slug": "avg-order-amount",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["AVG"],
+      "description": "Write a SQL query to calculate the average order amount.",
+      "hints": ["Use AVG(amount)."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 101, 200),\n(2, 102, 150),\n(3, 103, 300),\n(4, 104, 100);",
+      "solutionSQL": "SELECT AVG(amount) AS average_amount FROM orders;",
+      "testCases": [
+        {
+          "name": "Average order amount",
+          "expectedRows": [{ "average_amount": 187.5 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Calculate Total Revenue from Orders",
+      "slug": "total-revenue-orders",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["SUM"],
+      "description": "Write a SQL query to calculate the total revenue from all orders.",
+      "hints": ["Use SUM(amount)."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 200),\n(2, 150),\n(3, 300),\n(4, 100);",
+      "solutionSQL": "SELECT SUM(amount) AS total_revenue FROM orders;",
+      "testCases": [
+        {
+          "name": "Sum of all order amounts",
+          "expectedRows": [{ "total_revenue": 750 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Count Employees in Finance Department",
+      "slug": "count-finance-employees",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["COUNT", "WHERE"],
+      "description": "Write a SQL query to count employees who belong to the Finance department.",
+      "hints": ["Use COUNT(*) with a WHERE condition."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR'),\n(2, 'Bob', 'Finance'),\n(3, 'Charlie', 'Finance'),\n(4, 'David', 'Engineering');",
+      "solutionSQL": "SELECT COUNT(*) AS finance_count FROM employees WHERE department = 'Finance';",
+      "testCases": [
+        {
+          "name": "Count finance employees",
+          "expectedRows": [{ "finance_count": 2 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Find Average Salary by Department",
+      "slug": "avg-salary-by-department",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["AVG", "GROUP BY"],
+      "description": "Write a SQL query to return the average salary for each department.",
+      "hints": ["Use GROUP BY department.", "Select AVG(salary)."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR', 60000),\n(2, 'Bob', 'Engineering', 90000),\n(3, 'Charlie', 'Engineering', 85000),\n(4, 'David', 'Finance', 75000),\n(5, 'Emma', 'HR', 62000);",
+      "solutionSQL": "SELECT department, AVG(salary) AS avg_salary FROM employees GROUP BY department;",
+      "testCases": [
+        {
+          "name": "Average salary by department",
+          "expectedRows": [
+            { "department": "HR", "avg_salary": 61000 },
+            { "department": "Engineering", "avg_salary": 87500 },
+            { "department": "Finance", "avg_salary": 75000 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Find Highest and Lowest Order Amount",
+      "slug": "min-max-order-amount",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["MIN", "MAX"],
+      "description": "Write a SQL query to return the highest and lowest order amount.",
+      "hints": ["Select MIN(amount) and MAX(amount)."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, amount INTEGER);\nINSERT INTO orders VALUES\n(1, 200),\n(2, 450),\n(3, 120),\n(4, 300);",
+      "solutionSQL": "SELECT MIN(amount) AS lowest_amount, MAX(amount) AS highest_amount FROM orders;",
+      "testCases": [
+        {
+          "name": "Min and max order amount",
+          "expectedRows": [{ "lowest_amount": 120, "highest_amount": 450 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Count Products Priced Above 100",
+      "slug": "count-products-above-100",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["COUNT", "WHERE"],
+      "description": "Write a query to count how many products have a price greater than 100.",
+      "hints": ["Use COUNT(*) with a WHERE filter."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Keyboard', 80),\n(2, 'Monitor', 240),\n(3, 'Headphones', 150),\n(4, 'USB Cable', 15);",
+      "solutionSQL": "SELECT COUNT(*) AS product_count FROM products WHERE price > 100;",
+      "testCases": [
+        {
+          "name": "Count products > 100",
+          "expectedRows": [{ "product_count": 2 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Sum Salaries of Engineering Employees",
+      "slug": "sum-engineering-salaries",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Aggregation and Summary Functions",
+      "tags": ["SUM", "WHERE"],
+      "description": "Write a SQL query to calculate the total salary of all employees in the Engineering department.",
+      "hints": ["Use SUM(salary) with a WHERE filter for department."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR', 60000),\n(2, 'Bob', 'Engineering', 90000),\n(3, 'Charlie', 'Engineering', 85000),\n(4, 'David', 'Finance', 75000);",
+      "solutionSQL": "SELECT SUM(salary) AS total_salary FROM employees WHERE department = 'Engineering';",
+      "testCases": [
+        {
+          "name": "Sum engineering salaries",
+          "expectedRows": [{ "total_salary": 175000 }],
+          "ordered": true
+        }
+      ],
+      "points": 10
+    }
+  ],
+  "Grouping and Conditional Aggregation": [
+    {
+      "title": "Count Employees in Each Department",
+      "slug": "count-employees-by-department",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["GROUP BY", "COUNT"],
+      "description": "Write a SQL query to count how many employees work in each department.",
+      "hints": ["Use GROUP BY department.", "Use COUNT(*) to count employees."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR'),\n(2, 'Bob', 'Engineering'),\n(3, 'Charlie', 'Engineering'),\n(4, 'David', 'Finance'),\n(5, 'Emma', 'HR');",
+      "solutionSQL": "SELECT department, COUNT(*) AS employee_count FROM employees GROUP BY department;",
+      "testCases": [
+        {
+          "name": "Count per department",
+          "expectedRows": [
+            { "department": "HR", "employee_count": 2 },
+            { "department": "Engineering", "employee_count": 2 },
+            { "department": "Finance", "employee_count": 1 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Total Sales per Store",
+      "slug": "total-sales-per-store",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["SUM", "GROUP BY"],
+      "description": "Write a SQL query to calculate total sales amount for each store.",
+      "hints": ["Use SUM(amount).", "Group by store_id."],
+      "setupSQL": "CREATE TABLE sales(id INTEGER PRIMARY KEY, store_id INTEGER, amount INTEGER);\nINSERT INTO sales VALUES\n(1, 1, 200),\n(2, 1, 150),\n(3, 2, 400),\n(4, 2, 100),\n(5, 3, 500);",
+      "solutionSQL": "SELECT store_id, SUM(amount) AS total_sales FROM sales GROUP BY store_id;",
+      "testCases": [
+        {
+          "name": "Sales grouped by store",
+          "expectedRows": [
+            { "store_id": 1, "total_sales": 350 },
+            { "store_id": 2, "total_sales": 500 },
+            { "store_id": 3, "total_sales": 500 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Average Salary per Job Role",
+      "slug": "avg-salary-job-role",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["AVG", "GROUP BY"],
+      "description": "Write a SQL query to calculate the average salary for each job role.",
+      "hints": ["Use AVG(salary).", "Group by job_role."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, job_role TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 'Developer', 80000),\n(2, 'Bob', 'Developer', 90000),\n(3, 'Charlie', 'Manager', 120000),\n(4, 'David', 'Manager', 110000),\n(5, 'Emma', 'Designer', 70000);",
+      "solutionSQL": "SELECT job_role, AVG(salary) AS avg_salary FROM employees GROUP BY job_role;",
+      "testCases": [
+        {
+          "name": "Average salary by job role",
+          "expectedRows": [
+            { "job_role": "Developer", "avg_salary": 85000 },
+            { "job_role": "Manager", "avg_salary": 115000 },
+            { "job_role": "Designer", "avg_salary": 70000 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Count Orders per Month",
+      "slug": "orders-per-month",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["COUNT", "GROUP BY", "DATES"],
+      "description": "Write a SQL query to count how many orders were placed in each month.",
+      "hints": [
+        "Use strftime('%m', order_date) in SQLite.",
+        "Group by the extracted month."
+      ],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, order_date TEXT);\nINSERT INTO orders VALUES\n(1, '2024-01-05'),\n(2, '2024-01-20'),\n(3, '2024-02-11'),\n(4, '2024-02-28'),\n(5, '2024-03-02');",
+      "solutionSQL": "SELECT strftime('%m', order_date) AS month, COUNT(*) AS order_count FROM orders GROUP BY month;",
+      "testCases": [
+        {
+          "name": "Orders grouped by month",
+          "expectedRows": [
+            { "month": "01", "order_count": 2 },
+            { "month": "02", "order_count": 2 },
+            { "month": "03", "order_count": 1 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Departments with More Than 2 Employees",
+      "slug": "departments-more-than-2-employees",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["GROUP BY", "HAVING"],
+      "description": "Write a SQL query to return departments that have more than 2 employees.",
+      "hints": ["Use HAVING with COUNT().", "HAVING filters groups, not rows."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR'),\n(2, 'Bob', 'Engineering'),\n(3, 'Charlie', 'Engineering'),\n(4, 'David', 'Engineering'),\n(5, 'Emma', 'HR');",
+      "solutionSQL": "SELECT department, COUNT(*) AS employee_count FROM employees GROUP BY department HAVING COUNT(*) > 2;",
+      "testCases": [
+        {
+          "name": "Departments with more than 2 employees",
+          "expectedRows": [
+            { "department": "Engineering", "employee_count": 3 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Total Hours Worked per Employee",
+      "slug": "total-hours-per-employee",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["SUM", "GROUP BY"],
+      "description": "Write a SQL query to calculate the total hours worked by each employee.",
+      "hints": ["Use SUM(hours).", "Group by employee_id."],
+      "setupSQL": "CREATE TABLE work_logs(id INTEGER PRIMARY KEY, employee_id INTEGER, hours INTEGER);\nINSERT INTO work_logs VALUES\n(1, 1, 5),\n(2, 1, 3),\n(3, 2, 8),\n(4, 2, 6),\n(5, 3, 4);",
+      "solutionSQL": "SELECT employee_id, SUM(hours) AS total_hours FROM work_logs GROUP BY employee_id;",
+      "testCases": [
+        {
+          "name": "Total hours grouped by employee",
+          "expectedRows": [
+            { "employee_id": 1, "total_hours": 8 },
+            { "employee_id": 2, "total_hours": 14 },
+            { "employee_id": 3, "total_hours": 4 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Count Customers per Country",
+      "slug": "count-customers-by-country",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["COUNT", "GROUP BY"],
+      "description": "Write a SQL query to count how many customers belong to each country.",
+      "hints": ["Use GROUP BY country."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, country TEXT);\nINSERT INTO customers VALUES\n(1, 'Alice', 'USA'),\n(2, 'Bob', 'Canada'),\n(3, 'Charlie', 'USA'),\n(4, 'David', 'Germany');",
+      "solutionSQL": "SELECT country, COUNT(*) AS customer_count FROM customers GROUP BY country;",
+      "testCases": [
+        {
+          "name": "Customer count grouped by country",
+          "expectedRows": [
+            { "country": "USA", "customer_count": 2 },
+            { "country": "Canada", "customer_count": 1 },
+            { "country": "Germany", "customer_count": 1 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Total Revenue per Product Category",
+      "slug": "revenue-per-category",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["SUM", "GROUP BY"],
+      "description": "Write a query to calculate total revenue generated for each product category.",
+      "hints": ["Use SUM(price).", "Group by category."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, category TEXT, price INTEGER);\nINSERT INTO products VALUES\n(1, 'Laptop', 'Electronics', 900),\n(2, 'Mouse', 'Electronics', 20),\n(3, 'Shirt', 'Clothing', 40),\n(4, 'Jeans', 'Clothing', 60),\n(5, 'Book', 'Books', 25);",
+      "solutionSQL": "SELECT category, SUM(price) AS total_revenue FROM products GROUP BY category;",
+      "testCases": [
+        {
+          "name": "Revenue grouped by category",
+          "expectedRows": [
+            { "category": "Electronics", "total_revenue": 920 },
+            { "category": "Clothing", "total_revenue": 100 },
+            { "category": "Books", "total_revenue": 25 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Order Status with More Than 2 Orders",
+      "slug": "order-status-more-than-2",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["GROUP BY", "HAVING"],
+      "description": "Write a SQL query to return order statuses that appear more than 2 times.",
+      "hints": ["Use COUNT(status).", "Filter groups using HAVING."],
+      "setupSQL": "CREATE TABLE orders(id INTEGER PRIMARY KEY, status TEXT);\nINSERT INTO orders VALUES\n(1, 'Pending'),\n(2, 'Shipped'),\n(3, 'Shipped'),\n(4, 'Delivered'),\n(5, 'Shipped'),\n(6, 'Pending');",
+      "solutionSQL": "SELECT status, COUNT(*) AS status_count FROM orders GROUP BY status HAVING COUNT(*) > 2;",
+      "testCases": [
+        {
+          "name": "Statuses with more than 2 orders",
+          "expectedRows": [{ "status": "Shipped", "status_count": 3 }],
+          "ordered": false
+        }
+      ],
+      "points": 20
+    },
+    {
+      "title": "Average Rating per Product (Above 4)",
+      "slug": "avg-rating-above-4",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Grouping and Conditional Aggregation",
+      "tags": ["AVG", "GROUP BY", "HAVING"],
+      "description": "Write a SQL query to calculate the average rating for each product and return only those products whose average rating is greater than 4.",
+      "hints": ["Use AVG(rating).", "Apply HAVING AVG(rating) > 4."],
+      "setupSQL": "CREATE TABLE reviews(id INTEGER PRIMARY KEY, product_id INTEGER, rating INTEGER);\nINSERT INTO reviews VALUES\n(1, 1, 5),\n(2, 1, 4),\n(3, 1, 5),\n(4, 2, 3),\n(5, 2, 4),\n(6, 3, 5);",
+      "solutionSQL": "SELECT product_id, AVG(rating) AS avg_rating FROM reviews GROUP BY product_id HAVING AVG(rating) > 4;",
+      "testCases": [
+        {
+          "name": "Products with avg rating > 4",
+          "expectedRows": [
+            { "product_id": 1, "avg_rating": 4.666666666666667 },
+            { "product_id": 3, "avg_rating": 5 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 20
+    }
+  ],
+
+  "Introductory Joins": [
+    {
+      "title": "Inner Join Employees with Departments",
+      "slug": "inner-join-employees-departments",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["INNER JOIN"],
+      "description": "Write a SQL query to return employee names along with their department names using an INNER JOIN.",
+      "hints": [
+        "Match employees.department_id with departments.id.",
+        "INNER JOIN returns only matching rows."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER);\nCREATE TABLE departments(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 1),\n(2, 'Bob', 2),\n(3, 'Charlie', 3),\n(4, 'David', 2);\nINSERT INTO departments VALUES\n(1, 'HR'),\n(2, 'Engineering'),\n(3, 'Finance');",
+      "solutionSQL": "SELECT e.name AS employee_name, d.name AS department_name FROM employees e INNER JOIN departments d ON e.department_id = d.id;",
+      "testCases": [
+        {
+          "name": "Inner join employees and departments",
+          "expectedRows": [
+            { "employee_name": "Alice", "department_name": "HR" },
+            { "employee_name": "Bob", "department_name": "Engineering" },
+            { "employee_name": "Charlie", "department_name": "Finance" },
+            { "employee_name": "David", "department_name": "Engineering" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Left Join Customers with Orders",
+      "slug": "left-join-customers-orders",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["LEFT JOIN"],
+      "description": "Write a SQL query to return all customers and any matching orders using a LEFT JOIN.",
+      "hints": ["LEFT JOIN returns all customers even if they have no orders."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\nINSERT INTO customers VALUES\n(1, 'Alice'),\n(2, 'Bob'),\n(3, 'Charlie');\nINSERT INTO orders VALUES\n(1, 1, 200),\n(2, 1, 150),\n(3, 3, 300);",
+      "solutionSQL": "SELECT c.name AS customer_name, o.amount FROM customers c LEFT JOIN orders o ON c.id = o.customer_id;",
+      "testCases": [
+        {
+          "name": "Left join showing all customers",
+          "expectedRows": [
+            { "customer_name": "Alice", "amount": 200 },
+            { "customer_name": "Alice", "amount": 150 },
+            { "customer_name": "Bob", "amount": null },
+            { "customer_name": "Charlie", "amount": 300 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Right Join Products with Suppliers",
+      "slug": "right-join-products-suppliers",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["RIGHT JOIN"],
+      "description": "Write a SQL query to return all suppliers and the products they supply using a RIGHT JOIN.",
+      "hints": [
+        "RIGHT JOIN returns all suppliers even if they have no products."
+      ],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, supplier_id INTEGER);\nCREATE TABLE suppliers(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO products VALUES\n(1, 'Laptop', 1),\n(2, 'Monitor', 2);\nINSERT INTO suppliers VALUES\n(1, 'TechCorp'),\n(2, 'DisplayHub'),\n(3, 'NovaSupply');",
+      "solutionSQL": "SELECT p.name AS product_name, s.name AS supplier_name FROM products p RIGHT JOIN suppliers s ON p.supplier_id = s.id;",
+      "testCases": [
+        {
+          "name": "Right join showing all suppliers",
+          "expectedRows": [
+            { "product_name": "Laptop", "supplier_name": "TechCorp" },
+            { "product_name": "Monitor", "supplier_name": "DisplayHub" },
+            { "product_name": null, "supplier_name": "NovaSupply" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Inner Join Orders with Customers",
+      "slug": "inner-join-orders-customers",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["INNER JOIN"],
+      "description": "Write a SQL query to return order IDs along with the matching customer names.",
+      "hints": ["Match orders.customer_id with customers.id."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\nINSERT INTO customers VALUES\n(1, 'Alice'),\n(2, 'Bob');\nINSERT INTO orders VALUES\n(1, 1, 250),\n(2, 1, 150),\n(3, 2, 300);",
+      "solutionSQL": "SELECT o.id AS order_id, c.name AS customer_name FROM orders o INNER JOIN customers c ON o.customer_id = c.id;",
+      "testCases": [
+        {
+          "name": "Inner join orders and customers",
+          "expectedRows": [
+            { "order_id": 1, "customer_name": "Alice" },
+            { "order_id": 2, "customer_name": "Alice" },
+            { "order_id": 3, "customer_name": "Bob" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Self Join Employees with Managers",
+      "slug": "self-join-employees-managers",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["LEFT JOIN", "SELF JOIN"],
+      "description": "Write a SQL query to return each employee along with their manager's name using a self join.",
+      "hints": [
+        "Join employees table with itself.",
+        "Match e.manager_id to m.id."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, manager_id INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', NULL),\n(2, 'Bob', 1),\n(3, 'Charlie', 1),\n(4, 'David', 2);",
+      "solutionSQL": "SELECT e.name AS employee_name, m.name AS manager_name FROM employees e LEFT JOIN employees m ON e.manager_id = m.id;",
+      "testCases": [
+        {
+          "name": "Self join employees and managers",
+          "expectedRows": [
+            { "employee_name": "Alice", "manager_name": null },
+            { "employee_name": "Bob", "manager_name": "Alice" },
+            { "employee_name": "Charlie", "manager_name": "Alice" },
+            { "employee_name": "David", "manager_name": "Bob" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Inner Join Students with Courses",
+      "slug": "inner-join-students-courses",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["INNER JOIN"],
+      "description": "Write a SQL query to list all students along with the courses they are enrolled in.",
+      "hints": ["students.course_id should match courses.id."],
+      "setupSQL": "CREATE TABLE students(id INTEGER PRIMARY KEY, name TEXT, course_id INTEGER);\nCREATE TABLE courses(id INTEGER PRIMARY KEY, title TEXT);\nINSERT INTO students VALUES\n(1, 'Alice', 1),\n(2, 'Bob', 2),\n(3, 'Charlie', 1);\nINSERT INTO courses VALUES\n(1, 'Math'),\n(2, 'Physics');",
+      "solutionSQL": "SELECT s.name AS student_name, c.title AS course_title FROM students s INNER JOIN courses c ON s.course_id = c.id;",
+      "testCases": [
+        {
+          "name": "Join students and courses",
+          "expectedRows": [
+            { "student_name": "Alice", "course_title": "Math" },
+            { "student_name": "Charlie", "course_title": "Math" },
+            { "student_name": "Bob", "course_title": "Physics" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Left Join Products with Categories",
+      "slug": "left-join-products-categories",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["LEFT JOIN"],
+      "description": "Write a SQL query to return all products along with their category names using a LEFT JOIN.",
+      "hints": ["Some products may not belong to any category."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT, category_id INTEGER);\nCREATE TABLE categories(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO products VALUES\n(1, 'Laptop', 1),\n(2, 'Mouse', 1),\n(3, 'Desk', NULL);\nINSERT INTO categories VALUES\n(1, 'Electronics');",
+      "solutionSQL": "SELECT p.name AS product_name, c.name AS category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id;",
+      "testCases": [
+        {
+          "name": "Left join products and categories",
+          "expectedRows": [
+            { "product_name": "Laptop", "category_name": "Electronics" },
+            { "product_name": "Mouse", "category_name": "Electronics" },
+            { "product_name": "Desk", "category_name": null }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Right Join Tasks with Employees",
+      "slug": "right-join-tasks-employees",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["RIGHT JOIN"],
+      "description": "Write a SQL query to return all employees and the tasks assigned to them using a RIGHT JOIN.",
+      "hints": ["Include employees even if they have no tasks."],
+      "setupSQL": "CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, employee_id INTEGER);\nCREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO tasks VALUES\n(1, 'Create Report', 1),\n(2, 'Fix Bug', 2);\nINSERT INTO employees VALUES\n(1, 'Alice'),\n(2, 'Bob'),\n(3, 'Charlie');",
+      "solutionSQL": "SELECT t.title AS task_title, e.name AS employee_name FROM tasks t RIGHT JOIN employees e ON t.employee_id = e.id;",
+      "testCases": [
+        {
+          "name": "Right join tasks and employees",
+          "expectedRows": [
+            { "task_title": "Create Report", "employee_name": "Alice" },
+            { "task_title": "Fix Bug", "employee_name": "Bob" },
+            { "task_title": null, "employee_name": "Charlie" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Join Authors with Their Books",
+      "slug": "join-authors-books",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["INNER JOIN"],
+      "description": "Write a SQL query to return authors and the books they have written.",
+      "hints": ["Match books.author_id to authors.id."],
+      "setupSQL": "CREATE TABLE authors(id INTEGER PRIMARY KEY, name TEXT);\nCREATE TABLE books(id INTEGER PRIMARY KEY, title TEXT, author_id INTEGER);\nINSERT INTO authors VALUES\n(1, 'George'),\n(2, 'Mark');\nINSERT INTO books VALUES\n(1, 'SQL Guide', 1),\n(2, 'Database Systems', 1),\n(3, 'Adventure Tales', 2);",
+      "solutionSQL": "SELECT a.name AS author_name, b.title AS book_title FROM authors a INNER JOIN books b ON a.id = b.author_id;",
+      "testCases": [
+        {
+          "name": "Join authors and books",
+          "expectedRows": [
+            { "author_name": "George", "book_title": "SQL Guide" },
+            { "author_name": "George", "book_title": "Database Systems" },
+            { "author_name": "Mark", "book_title": "Adventure Tales" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Find Employees Without Departments",
+      "slug": "employees-without-departments",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Introductory Joins",
+      "tags": ["LEFT JOIN", "NULL"],
+      "description": "Write a SQL query to return employees who do not belong to any department.",
+      "hints": ["Use LEFT JOIN then filter department rows that are NULL."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department_id INTEGER);\nCREATE TABLE departments(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 1),\n(2, 'Bob', NULL),\n(3, 'Charlie', NULL);\nINSERT INTO departments VALUES\n(1, 'HR');",
+      "solutionSQL": "SELECT e.name AS employee_name FROM employees e LEFT JOIN departments d ON e.department_id = d.id WHERE d.id IS NULL;",
+      "testCases": [
+        {
+          "name": "Employees with NULL departments",
+          "expectedRows": [
+            { "employee_name": "Bob" },
+            { "employee_name": "Charlie" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    }
+  ],
+  "Column Aliasing & Core SQL Functions": [
+    {
+      "title": "Display Full Name Using CONCAT",
+      "slug": "concat-full-name",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["CONCAT", "ALIAS"],
+      "description": "Write a SQL query to display each employee's full name using CONCAT and alias the column as full_name.",
+      "hints": [
+        "Use CONCAT(first_name, ' ', last_name).",
+        "Alias with AS full_name."
+      ],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, first_name TEXT, last_name TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'Johnson'),\n(2, 'Bob', 'Smith'),\n(3, 'Charlie', 'Brown');",
+      "solutionSQL": "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM employees;",
+      "testCases": [
+        {
+          "name": "Concatenated full names",
+          "expectedRows": [
+            { "full_name": "Alice Johnson" },
+            { "full_name": "Bob Smith" },
+            { "full_name": "Charlie Brown" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Convert Names to Uppercase",
+      "slug": "uppercase-names",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["UPPER"],
+      "description": "Write a SQL query to return customer names in uppercase.",
+      "hints": ["Use the UPPER() function."],
+      "setupSQL": "CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO customers VALUES\n(1, 'alice'),\n(2, 'Bob'),\n(3, 'charlie');",
+      "solutionSQL": "SELECT UPPER(name) AS name_upper FROM customers;",
+      "testCases": [
+        {
+          "name": "Names in uppercase",
+          "expectedRows": [
+            { "name_upper": "ALICE" },
+            { "name_upper": "BOB" },
+            { "name_upper": "CHARLIE" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Show Length of Product Names",
+      "slug": "product-name-length",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["LENGTH"],
+      "description": "Write a query to return each product name and its length.",
+      "hints": ["Use LENGTH(name)."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO products VALUES\n(1, 'Laptop'),\n(2, 'Mouse'),\n(3, 'USB Cable');",
+      "solutionSQL": "SELECT name, LENGTH(name) AS name_length FROM products;",
+      "testCases": [
+        {
+          "name": "Product name lengths",
+          "expectedRows": [
+            { "name": "Laptop", "name_length": 6 },
+            { "name": "Mouse", "name_length": 5 },
+            { "name": "USB Cable", "name_length": 9 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Extract First 3 Characters of Employee Names",
+      "slug": "substring-first-three",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["SUBSTRING", "ALIAS"],
+      "description": "Write a query to return the first three characters of each employee's name.",
+      "hints": ["Use SUBSTR(name, 1, 3) for SQLite.", "Alias as short_name."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice'),\n(2, 'Bob'),\n(3, 'Catherine');",
+      "solutionSQL": "SELECT SUBSTR(name, 1, 3) AS short_name FROM employees;",
+      "testCases": [
+        {
+          "name": "First three characters",
+          "expectedRows": [
+            { "short_name": "Ali" },
+            { "short_name": "Bob" },
+            { "short_name": "Cat" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Replace Spaces in Item Names With Hyphens",
+      "slug": "replace-spaces-hyphens",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["REPLACE"],
+      "description": "Write a SQL query to replace spaces in item names with hyphens '-'.",
+      "hints": ["Use REPLACE(name, ' ', '-')."],
+      "setupSQL": "CREATE TABLE items(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO items VALUES\n(1, 'Red Shirt'),\n(2, 'Gaming Mouse'),\n(3, 'Office Chair');",
+      "solutionSQL": "SELECT REPLACE(name, ' ', '-') AS formatted_name FROM items;",
+      "testCases": [
+        {
+          "name": "Replace spaces with hyphens",
+          "expectedRows": [
+            { "formatted_name": "Red-Shirt" },
+            { "formatted_name": "Gaming-Mouse" },
+            { "formatted_name": "Office-Chair" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Trim Leading and Trailing Spaces",
+      "slug": "trim-spaces",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["TRIM"],
+      "description": "Write a query to trim leading and trailing spaces from product names.",
+      "hints": ["Use TRIM(name)."],
+      "setupSQL": "CREATE TABLE products(id INTEGER PRIMARY KEY, name TEXT);\nINSERT INTO products VALUES\n(1, '  Laptop  '),\n(2, '  Mouse'),\n(3, 'Keyboard  ');",
+      "solutionSQL": "SELECT TRIM(name) AS trimmed_name FROM products;",
+      "testCases": [
+        {
+          "name": "Trimmed product names",
+          "expectedRows": [
+            { "trimmed_name": "Laptop" },
+            { "trimmed_name": "Mouse" },
+            { "trimmed_name": "Keyboard" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Show Name and Salary With Aliases",
+      "slug": "alias-name-salary",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["AS", "ALIAS"],
+      "description": "Write a SQL query to return employee name as employee_name and salary as monthly_salary.",
+      "hints": ["Use AS to rename columns."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 60000),\n(2, 'Bob', 45000),\n(3, 'Charlie', 70000);",
+      "solutionSQL": "SELECT name AS employee_name, salary AS monthly_salary FROM employees;",
+      "testCases": [
+        {
+          "name": "Aliased columns",
+          "expectedRows": [
+            { "employee_name": "Alice", "monthly_salary": 60000 },
+            { "employee_name": "Bob", "monthly_salary": 45000 },
+            { "employee_name": "Charlie", "monthly_salary": 70000 }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Create a Labeled Salary Category",
+      "slug": "salary-label-case",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["CASE", "ALIAS"],
+      "description": "Write a SQL query to display each employee's salary category as 'High', 'Medium', or 'Low' using CASE.",
+      "hints": ["CASE WHEN salary > 70000 THEN 'High' ..."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, salary INTEGER);\nINSERT INTO employees VALUES\n(1, 'Alice', 60000),\n(2, 'Bob', 90000),\n(3, 'Charlie', 45000);",
+      "solutionSQL": "SELECT name, CASE WHEN salary > 70000 THEN 'High' WHEN salary BETWEEN 50000 AND 70000 THEN 'Medium' ELSE 'Low' END AS salary_category FROM employees;",
+      "testCases": [
+        {
+          "name": "Salary categories",
+          "expectedRows": [
+            { "name": "Alice", "salary_category": "Medium" },
+            { "name": "Bob", "salary_category": "High" },
+            { "name": "Charlie", "salary_category": "Low" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Extract Email Username",
+      "slug": "email-username",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["SUBSTRING", "INSTR"],
+      "description": "Write a SQL query to extract the email username (before the '@' symbol).",
+      "hints": ["Use SUBSTR(email, 1, INSTR(email, '@') - 1)."],
+      "setupSQL": "CREATE TABLE users(id INTEGER PRIMARY KEY, email TEXT);\nINSERT INTO users VALUES\n(1, 'alice@example.com'),\n(2, 'bob123@gmail.com'),\n(3, 'charlie@test.org');",
+      "solutionSQL": "SELECT SUBSTR(email, 1, INSTR(email, '@') - 1) AS username FROM users;",
+      "testCases": [
+        {
+          "name": "Email usernames",
+          "expectedRows": [
+            { "username": "alice" },
+            { "username": "bob123" },
+            { "username": "charlie" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    },
+    {
+      "title": "Combine Name and Department in One Column",
+      "slug": "combine-name-department",
+      "difficulty": "Easy",
+      "mode": "read",
+      "category": "Column Aliasing & Core SQL Functions",
+      "tags": ["CONCAT", "ALIAS"],
+      "description": "Write a query to display each employee in the format 'Name (Department)'.",
+      "hints": ["Use CONCAT(name, ' (', department, ')')."],
+      "setupSQL": "CREATE TABLE employees(id INTEGER PRIMARY KEY, name TEXT, department TEXT);\nINSERT INTO employees VALUES\n(1, 'Alice', 'HR'),\n(2, 'Bob', 'Engineering'),\n(3, 'Charlie', 'Finance');",
+      "solutionSQL": "SELECT CONCAT(name, ' (', department, ')') AS label FROM employees;",
+      "testCases": [
+        {
+          "name": "Name with department",
+          "expectedRows": [
+            { "label": "Alice (HR)" },
+            { "label": "Bob (Engineering)" },
+            { "label": "Charlie (Finance)" }
+          ],
+          "ordered": false
+        }
+      ],
+      "points": 10
+    }
+  ]
+}
